@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller Wrobit – Viñetas y Sangría</title>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=IBM+Plex+Sans+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --primary:#44bcf9; --primary-light:#dff4ff; --primary-mid:#7dd9fc;
+  --accent:#e63289;  --accent-light:#ffd9ec;  --accent-mid:#f06db0;
+  --amber:#f59e0b;   --amber-light:#fef3c7;
+  --green:#059669;   --green-light:#d1fae5;
+  --red:#dc2626;     --red-light:#fee2e2;
+  --dark:#060036; --bg:#ededed; --white:#ffffff;
+  --text:#0d0026; --text-muted:#5a5a7a;
+  --shadow:0 4px 20px rgba(0,0,0,0.08); --radius:12px;
+}
+body { font-family:'IBM Plex Sans Condensed',sans-serif; background:var(--bg); min-height:100vh; color:var(--text); overflow-x:hidden; padding-bottom:72px; }
+.app-header { background:linear-gradient(135deg,var(--primary),var(--accent)); color:white; padding:18px 20px; box-shadow:var(--shadow); display:flex; align-items:center; gap:14px; }
+.app-header .logo { width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,.25); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.app-header .h-title { font-family:'Russo One',sans-serif; font-size:20px; line-height:1.1; }
+.app-header .h-sub { font-size:13px; opacity:.85; margin-top:2px; }
+.container { max-width:760px; margin:0 auto; padding:20px 16px 60px; }
+.progress-wrap { background:#d5d5d5; border-radius:99px; height:10px; margin:14px 0 4px; overflow:hidden; }
+.progress-bar { height:100%; background:linear-gradient(90deg,var(--primary),var(--accent)); border-radius:99px; transition:width .5s ease; }
+.progress-label { display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); font-weight:500; margin-bottom:4px; }
+.card { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow); padding:24px 22px; margin:18px 0; animation:slideUp .35s ease; }
+@keyframes slideUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+.robot-wrap { display:flex; align-items:flex-start; gap:14px; margin-bottom:20px; }
+.wrobit-avatar { width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--accent)); display:flex; align-items:center; justify-content:center; font-size:26px; color:white; flex-shrink:0; box-shadow:0 4px 14px rgba(68,188,249,.4); }
+.wrobit-avatar.acc { background:linear-gradient(135deg,var(--accent),var(--primary)); box-shadow:0 4px 14px rgba(230,50,137,.4); }
+.speech-bubble { background:var(--primary-light); border-radius:var(--radius); border-bottom-left-radius:4px; padding:12px 16px; font-size:14px; color:var(--text); line-height:1.55; flex:1; position:relative; border:1.5px solid #b8e8fd; }
+.speech-bubble::before { content:''; position:absolute; left:-10px; top:14px; border:5px solid transparent; border-right-color:var(--primary-light); }
+.speech-bubble.acc { background:var(--accent-light); border-color:#f0b3d6; }
+.speech-bubble.acc::before { border-right-color:var(--accent-light); }
+.step-badge { display:inline-block; background:linear-gradient(135deg,var(--primary),var(--accent)); color:white; font-family:'Russo One',sans-serif; font-size:11px; padding:3px 10px; border-radius:99px; margin-bottom:8px; letter-spacing:.8px; }
+.step-badge.acc { background:linear-gradient(135deg,var(--accent),var(--primary)); }
+.step-badge.amb { background:linear-gradient(135deg,var(--amber),#f97316); }
+.step-title { font-family:'Russo One',sans-serif; font-size:20px; color:var(--dark); margin-bottom:12px; line-height:1.2; }
+.info-box { background:var(--primary-light); border-left:4px solid var(--primary); border-radius:0 var(--radius) var(--radius) 0; padding:12px 16px; margin:12px 0; font-size:14px; line-height:1.6; }
+.info-box.acc { background:var(--accent-light); border-color:var(--accent); }
+.info-box.amb { background:var(--amber-light); border-color:var(--amber); }
+.info-box strong { color:var(--dark); }
+.example-block { background:#f4f4f4; border:1.5px solid #d8d8d8; border-radius:var(--radius); padding:14px 18px; margin:12px 0; font-size:14px; line-height:1.8; }
+.example-block .label { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
+.compare-card { border-radius:var(--radius); padding:14px; }
+.compare-card .cc-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
+.compare-card.before { background:#f4f4f4; border:1.5px solid #d8d8d8; }
+.compare-card.after  { background:var(--primary-light); border:1.5px solid var(--primary-mid); }
+.compare-card.before .cc-title { color:var(--text-muted); }
+.compare-card.after  .cc-title { color:var(--primary); }
+.compare-card p { font-size:13px; line-height:1.8; }
+.bullet-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; margin:14px 0; }
+.bullet-card { background:var(--primary-light); border-radius:var(--radius); padding:12px 10px; text-align:center; cursor:pointer; transition:transform .15s,background .15s; border:2px solid transparent; user-select:none; }
+.bullet-card:hover { transform:translateY(-2px); background:#c2ecfd; }
+.bullet-card.selected { border-color:var(--primary); background:#c2ecfd; }
+.bullet-card .symbol { font-size:22px; margin-bottom:6px; }
+.bullet-card .name { font-size:11px; font-weight:700; color:var(--dark); }
+.doc-sim { background:white; border:1.5px solid #d8d8d8; border-radius:var(--radius); padding:14px 18px; font-family:'Georgia',serif; font-size:13px; line-height:1.9; margin:12px 0; box-shadow:0 1px 6px rgba(0,0,0,.06); }
+.doc-sim ul,.doc-sim ol { padding-left:20px; }
+.doc-sim li { margin-bottom:2px; }
+.indent-1 { padding-left:24px; }
+.indent-2 { padding-left:48px; }
+.hanging { padding-left:26px; text-indent:-13px; }
+.first-line { text-indent:24px; }
+.shortcut-row { display:flex; justify-content:space-between; align-items:center; background:#f4f4f4; border:1.5px solid #d8d8d8; border-radius:10px; padding:9px 14px; margin:6px 0; font-size:13px; }
+kbd { display:inline-block; background:white; border:1.5px solid #c4c4c4; border-bottom:3px solid #c4c4c4; border-radius:6px; padding:2px 8px; font-family:monospace; font-size:12px; color:var(--dark); line-height:1.6; margin:0 1px; }
+.indent-types { display:grid; gap:10px; margin:12px 0; }
+.indent-type-item { background:var(--white); border:1.5px solid #d8d8d8; border-radius:var(--radius); padding:14px 16px; display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:start; }
+.indent-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.indent-type-item h4 { font-size:14px; font-weight:700; margin-bottom:4px; }
+.indent-type-item p  { font-size:13px; color:var(--text-muted); line-height:1.5; }
+.mini-ex { font-size:12px; background:#f4f4f4; border-radius:6px; padding:6px 10px; margin-top:6px; line-height:1.7; }
+.multilevel { background:#f4f4f4; border:1.5px solid #d8d8d8; border-radius:var(--radius); padding:14px 18px; margin:12px 0; font-size:14px; line-height:1.9; }
+.ml-item { display:flex; align-items:flex-start; gap:6px; }
+.ml-item .ml-bul { flex-shrink:0; font-weight:700; }
+.level-1 { padding-left:0; } .level-1 .ml-bul { color:var(--primary); }
+.level-2 { padding-left:20px; } .level-2 .ml-bul { color:var(--accent); font-size:12px; }
+.level-3 { padding-left:40px; } .level-3 .ml-bul { color:var(--amber); font-size:11px; }
+.celebration { text-align:center; padding:18px 0; }
+.celebration .big-emoji { font-size:72px; display:block; margin-bottom:16px; animation:bounce 1s ease infinite alternate; }
+@keyframes bounce { from{transform:translateY(0)} to{transform:translateY(-10px)} }
+.celebration h2 { font-family:'Russo One',sans-serif; font-size:28px; color:var(--dark); margin-bottom:10px; }
+.celebration p { font-size:15px; color:var(--text-muted); line-height:1.6; }
+.badge-earned { display:inline-flex; align-items:center; gap:10px; background:linear-gradient(135deg,var(--primary),var(--accent)); color:white; border-radius:var(--radius); padding:14px 22px; font-size:15px; font-weight:700; margin:18px 0; }
+.badge-icon { font-size:26px; }
+.review-list { list-style:none; margin:12px 0; }
+.review-list li { display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid #eee; font-size:14px; line-height:1.5; }
+.review-list li:last-child { border-bottom:none; }
+.review-list li .ri { font-size:18px; flex-shrink:0; }
+.nav-buttons { display:flex; gap:12px; margin-top:22px; flex-wrap:wrap; }
+.btn-prev { background:var(--white); border:2px solid #d8d8d8; color:var(--dark); border-radius:var(--radius); padding:10px 20px; font-size:14px; font-weight:700; cursor:pointer; font-family:'IBM Plex Sans Condensed',sans-serif; transition:all .15s; }
+.btn-prev:hover { background:#f0f0f0; border-color:#bbb; }
+.btn-next { background:linear-gradient(135deg,var(--primary),var(--accent)); border:none; color:white; border-radius:var(--radius); padding:10px 26px; font-size:14px; font-weight:700; cursor:pointer; font-family:'IBM Plex Sans Condensed',sans-serif; transition:opacity .15s; flex:1; min-width:130px; }
+.btn-next:hover { opacity:.9; }
+.btn-next:disabled { opacity:.4; cursor:not-allowed; }
+.confetti-piece { position:fixed; opacity:0; animation:fall 2.5s ease-in forwards; z-index:999; border-radius:2px; }
+@keyframes fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+.step { display:none; } .step.active { display:block; }
+body { padding-bottom:72px; }
+#voiceBar { position:fixed; bottom:0; left:0; right:0; background:var(--dark); padding:10px 16px; display:flex; align-items:center; gap:8px; z-index:200; box-shadow:0 -4px 24px rgba(0,0,0,.35); flex-wrap:wrap; min-height:56px; }
+#voiceBar .vb-robot { font-size:22px; transition:transform .3s; flex-shrink:0; }
+#voiceBar .vb-robot.talking { animation:robotTalk .4s ease-in-out infinite alternate; }
+@keyframes robotTalk { from{transform:scale(1) rotate(-3deg)} to{transform:scale(1.15) rotate(3deg)} }
+#btnSpeak { background:linear-gradient(135deg,var(--primary),var(--accent)); border:none; color:white; border-radius:99px; padding:7px 16px; font-size:13px; font-weight:700; cursor:pointer; font-family:'IBM Plex Sans Condensed',sans-serif; transition:opacity .15s; white-space:nowrap; flex-shrink:0; }
+#btnSpeak:hover { opacity:.88; }
+#btnSpeak.speaking { background:linear-gradient(135deg,#dc2626,#f59e0b); }
+.speed-group { display:flex; gap:4px; background:rgba(255,255,255,.08); border-radius:99px; padding:3px; flex-shrink:0; }
+.speed-btn { border:none; background:transparent; color:rgba(255,255,255,.55); border-radius:99px; padding:5px 10px; font-size:13px; font-weight:700; cursor:pointer; font-family:'IBM Plex Sans Condensed',sans-serif; transition:all .15s; line-height:1; }
+.speed-btn:hover { color:white; }
+.speed-btn.active { background:rgba(255,255,255,.18); color:white; }
+.vb-wave { display:flex; align-items:center; gap:2px; margin-left:6px; opacity:0; transition:opacity .3s; flex-shrink:0; }
+.vb-wave.active { opacity:1; }
+.vb-wave span { display:block; width:3px; background:var(--primary); border-radius:2px; animation:waveBar .8s ease-in-out infinite alternate; }
+.vb-wave span:nth-child(1){height:8px;animation-delay:0s}
+.vb-wave span:nth-child(2){height:14px;animation-delay:.15s}
+.vb-wave span:nth-child(3){height:10px;animation-delay:.3s}
+.vb-wave span:nth-child(4){height:16px;animation-delay:.1s}
+.vb-wave span:nth-child(5){height:8px;animation-delay:.25s}
+@keyframes waveBar { from{transform:scaleY(.4)} to{transform:scaleY(1.2)} }
+#btnLang { margin-left:auto; background:rgba(255,255,255,.1); border:1.5px solid rgba(255,255,255,.2); color:white; border-radius:99px; padding:6px 14px; font-size:13px; font-weight:700; cursor:pointer; font-family:'IBM Plex Sans Condensed',sans-serif; transition:all .15s; flex-shrink:0; }
+#btnLang:hover { background:rgba(255,255,255,.2); }
+@media(max-width:480px){
+  .compare-grid{grid-template-columns:1fr}
+  .bullet-grid{grid-template-columns:repeat(2,1fr)}
+  .app-header .h-title{font-size:16px}
+  .step-title{font-size:17px}
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="logo">🤖</div>
+  <div>
+    <div class="h-title" id="hTitle"></div>
+    <div class="h-sub"   id="hSub"></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="progress-label">
+    <span id="stepLabel"></span>
+    <span id="pct"></span>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar" style="width:9%;"></div>
+  </div>
+
+  <!-- PASO 1 -->
+  <div class="step active" id="step1">
+    <div class="card">
+      <div class="robot-wrap">
+        <div class="wrobit-avatar">🤖</div>
+        <div class="speech-bubble" id="s1bubble"></div>
+      </div>
+      <div class="step-badge" id="s1badge"></div>
+      <div class="step-title" id="s1title"></div>
+      <div style="margin:14px 0;">
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eee;font-size:14px;"><span style="font-size:20px;">📌</span><span id="s1i1"></span></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eee;font-size:14px;"><span style="font-size:20px;">↔️</span><span id="s1i2"></span></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eee;font-size:14px;"><span style="font-size:20px;">⌨️</span><span id="s1i3"></span></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;font-size:14px;"><span style="font-size:20px;">🏆</span><span id="s1i4"></span></div>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-next" onclick="nextStep()" id="s1btnStart"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="step" id="step2">
+    <div class="card">
+      <div class="robot-wrap">
+        <div class="wrobit-avatar">🤖</div>
+        <div class="speech-bubble" id="s2bubble"></div>
+      </div>
+      <div class="step-badge" id="s2badge"></div>
+      <div class="step-title" id="s2title"></div>
+      <div class="compare-grid">
+        <div class="compare-card before">
+          <div class="cc-title" id="s2before"></div>
+          <p id="s2beforeText"></p>
+        </div>
+        <div class="compare-card after">
+          <div class="cc-title" id="s2after"></div>
+          <p id="s2afterText"></p>
+        </div>
+      </div>
+      <div class="info-box"><strong id="s2info1"></strong><br><span id="s2info2"></span></div>
+      <div class="nav-buttons">
+        <button class="btn-prev" onclick="prevStep()" id="s2btnPrev"></button>
+        <button class="btn-next" onclick="nextStep()" id="s2btnNext"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="step" id="step3">
+    <div class="card">
+      <div class="robot-wrap">
+        <div class="wrobit-avatar acc">🤖</div>
+        <div class="speech-bubble acc" id="s3bubble"></div>
+      </div>
+      <div class="step-badge acc" id="s3badge"></div>
+      <div class="step-title" id="s3title"></div>
+      <div style="display:grid;gap:10px;margin:14px 0;">
+        <div class="indent-type-item">
+          <div class="indent-icon" style="background:var(--primary-light);">☰</div>
+          <div><h4 id="s3m1"></h4><p id="s3m1d"></p></div>
+        </div>
+        <div class="indent-type-item">
+          <div class="indent-icon" style="background:var(--accent-light);">*</div>
+          <div><h4 id="s3m2"></h4><p id="s3m2d"></p></div>
+        </div>
+        <div class="indent-type-item">
+          <div class="indent-icon" style="background:var(--amber-light);">⌨️</div>
+          <div><h4 id="s3m3"></h4><p id="s3m3d"></p><div class="mini-ex" id="s3exit"></div></div>
+        </div>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-prev" onclick="prevStep()" id="s3btnPrev"></button>
+        <button class="btn-next" onclick="nextStep()" id="s3btnNext"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 4 -->
+  <div class="step" id="step4">
+    <div class="card">
+      <div class="step-badge" id="s4badge"></div>
+      <div class="step-title" id="s4title"></div>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:14px;" id="s4hint"></p>
+      <div class="bullet-grid">
+        <div class="bullet-card" onclick="selectBullet(this,'•')"><div class="symbol">•</div><div class="name" id="s4b1"></div></div>
+        <div class="bullet-card" onclick="selectBullet(this,'–')"><div class="symbol">–</div><div class="name" id="s4b2"></div></div>
+        <div class="bullet-card" onclick="selectBullet(this,'▶')"><div class="symbol">▶</div><div class="name" id="s4b3"></div></div>
+        <div class="bullet-card" onclick="selectBullet(this,'✓')"><div class="symbol">✓</div><div class="name" id="s4b4"></div></div>
+        <div class="bullet-card" onclick="selectBullet(this,'○')"><div class="symbol">○</div><div class="name" id="s4b5"></div></div>
+        <div class="bullet-card" onclick="selectBullet(this,'▪')"><div class="symbol">▪</div><div class="name" id="s4b6"></div></div>
+      </div>
+      <div class="example-block" id="bulletPreview">
+        <div class="label" id="s4previewLabel"></div>
+        <div id="bulletPreviewContent"></div>
+      </div>
+      <div class="info-box acc"><strong id="s4info1"></strong><span id="s4info2"></span></div>
+      <div class="nav-buttons">
+        <button class="btn-prev" onclick="prevStep()" id="s4btnPrev"></button>
+        <button class="btn-next" onclick="nextStep()" id="s4btnNext"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 5 -->
+  <div class="step" id="step5">
+    <div class="card">
+      <div class="robot-wrap">
+        <div class="wrobit-avatar">🤖</div>
+        <div class="speech-bubble" id="s5bubble"></div>
+      </div>
+      <div class="step-badge" id="s5badge"></div>
+      <div class="step-title" id="s5title"></div>
+      <div class="doc-sim">
+        <div style="margin-bottom:8px;"><strong id="s5ex0"></strong></div>
+        <div style="margin-bottom:14px;" id="s5t0"></div>
+        <div style="margin-bottom:6px;"><strong id="s5ex1"></strong></div>
+        <div class="indent-1" style="margin-bottom:14px;" id="s5t1"></div>
+        <div style="margin-bottom:6px;"><strong id="s5ex2"></strong></div>
+        <div class="indent-2" id="s5t2"></div>
+      </div>
+      <div class="info-box"><strong id="s5info1"></strong><br><span id="s5info2"></span></div>
+      <div class="nav-buttons">
+        <button class="btn-prev" onclick="prevStep()" id="s5btnPrev"></button>
+        <button class="btn-next" onclick="nextStep()" id="s5btnNext"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 6 -->
+  <div class="step" id="step6">
+    <div class="card">
+      <div class="robot-wrap">
+        <div class="wrobit-avatar acc">🤖</div>
+        <div class="speech-bubble acc" id="s6bubble"></div>
+      </div>
+      <div class="step-badge acc" id="s6badge"></div>
+      <div class="step-title" id="s6title"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;">
+        <div style="background:var(--primary-light);border:1.5px solid var(--primary-mid);border-radius:var(--radius);padding:16px;text-align:center;">
+          <div style="font-size:2rem;margin-bottom:8px;">→</div>
+          <kbd>Tab</kbd>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.4;" id="s6tabDesc"></div>
+        </div>
+        <div style="background:var(--accent-light);border:1.5px solid var(--accent-mid);border-radius:var(--radius);padding:16px;text-align:center;">
+          <div style="font-size:2rem;margin-bottom:8px;">←</div>
+          <kbd>Shift</kbd>+<kbd>Tab</kbd>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.4;" id="s6shiftDesc"></div>
+        </div>
+      </div>
+      <div class="multilevel">
+        <div class="ml-item level-1"><span class="ml-bul">●</span><span id="s6l1"></span></div>
+        <div class="ml-item level-2"><span class="ml-bul">◦</span><span id="s6l2"></span></div>
+        <div class="ml-item level-3"><span class="ml-bul">‣</span><span id="s6l3"></span></div>
+        <div class="ml-item level-2"><span class="ml-bul">◦</span><span id="s6l4"></span></div>
+        <div class="ml-item level-1"><span class="ml-bul">●</span><span id="s6l5"></span></div>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-prev" onclick="prevStep()" id="s6btnPrev"></button>
+        <button class="btn-next" onclick="nextStep()" id="s6btnNext"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 7 -->
+  <div class="step" id="step7">
+    <div class="card">
+      <div class="step-badge amb" id="s7badge"></div>
+      <div class="step-title" id="s7title"></div>
+      <p style="font-size:14px;line-height:1.7;color:var(--text-muted);margin-bottom:14px;" id="s7intro"></p>
+      <div class="compare-grid">
+        <div class="compare-card before">
+          <div class="cc-title" id="s7before"></div>
+          <p style="font-family:'Georgia',serif;font-size:12px;line-height:1.7;" id="s7beforeText"></p>
+        </div>
+        <div class="compare-card after">
+          <div class="cc-title" id="s7after"></div>
+          <p style="font-family:'Georgia',serif;font-size:12px;line-height:1.7;text-indent:20px;" id="s7afterText"></p>
+        </div>
+      </div>
+      <div class="indent-types">
+        <div class="indent-type-item">
+          <div class="indent-icon" style="background:var(--amber-light);">🔧</div>
+          <div><h4 id="s7how"></h4><p id="s7howText"></p></div>
+        </div>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-prev" onclick="prevStep()" id="s7btnPrev"></button>
+        <button class="btn-next" onclick="nextStep()" id="s7btnNext"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 8 -->
+  <div class="step" id="step8">
+    <div class="card">
+      <div class="robot-wrap">
+        <div class="wrobit-avatar">🤖</div>
+        <div class="speech-bubble" id="s8bubble"></div>
+      </div>
+      <div class="step-badge" id="s8badge"></div>
+      <div class="step-title" id="s8title"></div>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;" id="s8intro"></p>
+      <div class="example-block">
+        <div class="label" id="s8label"></div>
+        <div style="font-family:'Georgia',serif;font-size:13px;line-height:1.9;">
+          <p class="hanging" style="margin-bottom:8px;">García, M. (2023). <em>Metodología de la investigación aplicada.</em> Editorial Académica. https://doi.org/10.xxxx/xxxxx</p>
+          <p class="hanging" style="margin-bottom:8px;">López, A., &amp; Torres, C. (2022). <em>Fundamentos de diseño curricular.</em> Universidad Nacional.</p>
+          <p class="hanging">Ramírez, J. (2021). Evaluación por competencias. <em>Revista Educativa</em>, 15(2), 45–67.</p>
+        </div>
+      </div>
+      <div class="info-box"><strong id="s8info1"></strong><br><span id="s8info2"></span></div>
+      <div class="nav-buttons">
+        <button class="btn-prev" onclick="prevStep()" id="s8btnPrev"></button>
+        <button class="btn-next" onclick="nextStep()" id="s8btnNext"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 9 -->
+  <div class="step" id="step9">
+    <div class="card">
+      <div class="step-badge acc" id="s9badge"></div>
+      <div class="step-title" id="s9title"></div>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:14px;" id="s9intro"></p>
+      <div class="compare-grid">
+        <div class="compare-card after" style="background:var(--primary-light);border-color:var(--primary-mid);">
+          <div class="cc-title" style="color:var(--primary);" id="s9bullets"></div>
+          <p style="font-size:13px;line-height:1.9;" id="s9bulletsText"></p>
+        </div>
+        <div class="compare-card after" style="background:var(--accent-light);border-color:var(--accent-mid);">
+          <div class="cc-title" style="color:var(--accent);" id="s9numbered"></div>
+          <p style="font-size:13px;line-height:1.9;" id="s9numberedText"></p>
+        </div>
+      </div>
+      <div class="info-box acc"><strong id="s9warn"></strong><span id="s9warnText"></span></div>
+      <div class="nav-buttons">
+        <button class="btn-prev" onclick="prevStep()" id="s9btnPrev"></button>
+        <button class="btn-next" onclick="nextStep()" id="s9btnNext"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 10 -->
+  <div class="step" id="step10">
+    <div class="card">
+      <div class="robot-wrap">
+        <div class="wrobit-avatar acc">🤖</div>
+        <div class="speech-bubble acc" id="s10bubble"></div>
+      </div>
+      <div class="step-badge acc" id="s10badge"></div>
+      <div class="step-title" id="s10title"></div>
+      <div style="margin-top:4px;">
+        <div class="shortcut-row"><span id="sk1"></span><span><kbd>Tab</kbd></span></div>
+        <div class="shortcut-row"><span id="sk2"></span><span><kbd>Shift</kbd>+<kbd>Tab</kbd></span></div>
+        <div class="shortcut-row"><span id="sk3"></span><span><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd></span></div>
+        <div class="shortcut-row"><span id="sk4"></span><span><kbd>Ctrl</kbd>+<kbd>M</kbd></span></div>
+        <div class="shortcut-row"><span id="sk5"></span><span><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd></span></div>
+        <div class="shortcut-row"><span id="sk6"></span><span><kbd>Alt</kbd>+<kbd>H</kbd> → <kbd>PG</kbd></span></div>
+      </div>
+      <div class="info-box amb" style="margin-top:14px;"><strong id="s10tip"></strong><span id="s10tipText"></span></div>
+      <div class="nav-buttons">
+        <button class="btn-prev" onclick="prevStep()" id="s10btnPrev"></button>
+        <button class="btn-next" onclick="nextStep(); launchConfetti();" id="s10btnNext"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 11 -->
+  <div class="step" id="step11">
+    <div class="card">
+      <div class="celebration">
+        <span class="big-emoji">🏆</span>
+        <h2 id="s11title"></h2>
+        <p id="s11sub"></p>
+        <div class="badge-earned"><span class="badge-icon">🎖️</span><span id="s11badge"></span></div>
+      </div>
+      <div class="example-block">
+        <div class="label" id="s11reviewLabel"></div>
+        <ul class="review-list" id="s11list"></ul>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-prev" onclick="restartTaller()" id="s11restart"></button>
+        <button class="btn-next" onclick="restartTaller()" id="s11repeat"></button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- VOICE BAR -->
+<div id="voiceBar">
+  <div class="vb-robot" id="vbRobot">🤖</div>
+  <button id="btnSpeak" onclick="toggleSpeak()">🎙️ <span id="speakTxt"></span></button>
+  <div class="vb-wave" id="vbWave"><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="speed-group">
+    <button class="speed-btn" onclick="setSpeed(0.7)" data-rate="0.7" title="Slow">🐢</button>
+    <button class="speed-btn active" onclick="setSpeed(1.0)" data-rate="1.0" title="Normal">▶</button>
+    <button class="speed-btn" onclick="setSpeed(1.4)" data-rate="1.4" title="Fast">⚡</button>
+  </div>
+  <button id="btnLang" onclick="toggleLang()"></button>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  DICTIONARY — every translatable string
+// ════════════════════════════════════════════════════════
+const UI = {
+  es: {
+    hTitle:'Simulador Wrobit — Aprender STEAM', hSub:'Taller: Viñetas y Sangría en Word',
+    stepWord:'Paso', ofWord:'de', speakTxt:'Escuchar', stopTxt:'Detener', langBtn:'🌐 EN',
+    // Step 1
+    s1bubble:'¡Hola! Soy <strong>Wrobit</strong> 🤖 Hoy aprenderás a organizar tus documentos usando <strong>viñetas</strong> y <strong>sangría</strong>. ¡Prepárate para practicar!',
+    s1badge:'TALLER · PASO 1', s1title:'¡Bienvenido al taller!',
+    s1i1:'Aprenderás qué son las <strong>viñetas</strong> y sus tipos',
+    s1i2:'Descubrirás cómo funciona la <strong>sangría</strong>',
+    s1i3:'Dominarás los <strong>atajos de teclado</strong> esenciales',
+    s1i4:'Ganarás una <strong>insignia de experto</strong>',
+    s1btnStart:'¡Comenzar! →',
+    // Step 2
+    s2bubble:'Las <strong>viñetas</strong> son símbolos que ponemos al inicio de cada elemento de una lista. ¡Hacen que la información sea mucho más fácil de leer!',
+    s2badge:'CONCEPTO · PASO 2', s2title:'¿Qué son las viñetas?',
+    s2before:'❌ Sin viñetas', s2beforeText:'Manzanas Peras Uvas Bananas Fresas — todo junto, difícil de leer.',
+    s2after:'✅ Con viñetas', s2afterText:'• Manzanas<br>• Peras<br>• Uvas<br>• Bananas<br>• Fresas',
+    s2info1:'💡 ¿Para qué sirven?', s2info2:'Las viñetas organizan información en una lista, hacen el texto más claro y ayudan al lector a encontrar los puntos importantes fácilmente.',
+    // Step 3
+    s3bubble:'¿Sabías que hay tres formas distintas de activar las viñetas? Te las enseño todas, elige la que más te guste.',
+    s3badge:'CÓMO HACERLO · PASO 3', s3title:'Crear tu primera lista',
+    s3m1:'Botón en la barra de herramientas', s3m1d:'Pestaña <strong>Inicio</strong> → botón <strong>Viñetas ☰</strong>. La forma más visual.',
+    s3m2:'Asterisco automático', s3m2d:'Escribe <kbd>*</kbd> seguido de un espacio → Word / Docs lo convierte en viñeta automáticamente.',
+    s3m3:'Atajo de teclado (Word)', s3m3d:'Usa <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> para activar/desactivar la lista de viñetas.',
+    s3exit:'Para salir de la lista: presiona <kbd>Enter</kbd> dos veces, o <kbd>Backspace</kbd> en una línea vacía.',
+    // Step 4
+    s4badge:'TIPOS · PASO 4', s4title:'Tipos de viñetas disponibles',
+    s4hint:'Toca una para ver cómo se ve con la lista de ejemplo:',
+    s4b1:'Punto relleno', s4b2:'Guión', s4b3:'Flecha', s4b4:'Palomita', s4b5:'Círculo vacío', s4b6:'Cuadrado',
+    s4previewLabel:'👆 Toca un tipo para ver el ejemplo',
+    s4info1:'📌 Personalizar en Word:', s4info2:' Inicio → flecha ▾ junto a Viñetas → <em>Definir nueva viñeta</em> → símbolo, imagen o fuente Wingdings.',
+    // Step 5
+    s5bubble:'Ahora hablemos de la <strong>sangría</strong>. Es el espacio entre el margen del documento y el inicio del texto. ¡Es más sencilla de lo que suena!',
+    s5badge:'CONCEPTO · PASO 5', s5title:'¿Qué es la sangría?',
+    s5ex0:'Sin sangría (margen normal):', s5t0:'Este texto empieza en el margen izquierdo sin desplazamiento.',
+    s5ex1:'Sangría izquierda (1.25 cm):', s5t1:'Todo el párrafo se mueve hacia adentro. Útil para destacar contenido.',
+    s5ex2:'Sangría doble (2.5 cm):', s5t2:'Doble desplazamiento. Común en citas largas formato APA.',
+    s5info1:'📐 La regla horizontal en Word', s5info2:'Muestra marcadores de sangría que puedes arrastrar visualmente sin abrir ningún menú.',
+    // Step 6
+    s6bubble:'Dentro de una lista, la tecla <strong>Tab</strong> es tu mejor amiga para controlar los niveles de sangría sin tocar ningún menú.',
+    s6badge:'ATAJOS · PASO 6', s6title:'Aumentar y disminuir sangría',
+    s6tabDesc:'Aumentar sangría<br>(subir un nivel)', s6shiftDesc:'Disminuir sangría<br>(bajar un nivel)',
+    s6l1:'Nivel 1 — sin Tab', s6l2:'Nivel 2 — un Tab', s6l3:'Nivel 3 — dos Tab', s6l4:'Nivel 2 — Shift+Tab', s6l5:'Nivel 1 — Shift+Tab',
+    // Step 7
+    s7badge:'TIPOS DE SANGRÍA · PASO 7', s7title:'Sangría de primera línea',
+    s7intro:'Desplaza <em>solo la primera línea</em> del párrafo. Es la forma clásica de separar párrafos en textos académicos y formales.',
+    s7before:'Sin sangría', s7beforeText:'Este párrafo no tiene sangría. Todas las líneas comienzan en el mismo margen izquierdo.',
+    s7after:'Con sangría de 1ª línea', s7afterText:'Este párrafo sí tiene sangría. Solo la primera línea está indentada, separando visualmente el contenido.',
+    s7how:'Cómo configurarla', s7howText:'Formato → Párrafo → Sangría especial → <strong>Primera línea</strong> → valor: <strong>1.25 cm</strong> (estándar APA).',
+    // Step 8
+    s8bubble:'La <strong>sangría francesa</strong> es la favorita de los formatos académicos como APA. ¡La primera línea va al margen y las demás entran!',
+    s8badge:'TIPOS DE SANGRÍA · PASO 8', s8title:'Sangría francesa (colgante)',
+    s8intro:'La primera línea queda al margen y las líneas siguientes se desplazan hacia adentro.',
+    s8label:'Ejemplo — Referencias APA',
+    s8info1:'📚 Obligatoria en APA 7ª edición', s8info2:'Ruta: Formato → Párrafo → Especial → <strong>Francesa</strong>. Valor estándar: 1.27 cm.',
+    // Step 9
+    s9badge:'COMPARACIÓN · PASO 9', s9title:'Viñetas vs. listas numeradas',
+    s9intro:'Elige el tipo correcto según el contenido que presentas.',
+    s9bullets:'• Viñetas — cuando:', s9bulletsText:'• El orden no importa<br>• Elementos equivalentes<br>• Lista de materiales<br>• Características',
+    s9numbered:'1. Numerada — cuando:', s9numberedText:'1. El orden sí importa<br>2. Pasos o instrucciones<br>3. Ranking o prioridades<br>4. Secuencia de eventos',
+    s9warn:'⚠️ Evita mezclar tipos:', s9warnText:' Usa un solo tipo por nivel de jerarquía para mantener consistencia visual.',
+    // Step 10
+    s10bubble:'¡Estos atajos son los que usan los <strong>profesionales</strong>! Memorízalos y trabajarás el doble de rápido.',
+    s10badge:'ATAJOS · PASO 10', s10title:'Atajos de teclado esenciales',
+    sk1:'Aumentar sangría (en lista)', sk2:'Disminuir sangría (en lista)',
+    sk3:'Lista con viñetas (Word)', sk4:'Aumentar sangría (párrafo)',
+    sk5:'Disminuir sangría (párrafo)', sk6:'Abrir opciones de párrafo',
+    s10tip:'💡 Tip Wrobit:', s10tipText:' Practica estos atajos 5 minutos al día durante una semana y los tendrás automatizados.',
+    s10btnNext:'Finalizar →',
+    // Step 11
+    s11title:'¡Taller completado!', s11sub:'Dominas viñetas y sangría en procesadores de texto',
+    s11badge:'Insignia: Experto en Formato', s11reviewLabel:'Lo que aprendiste',
+    s11items:['Qué son las viñetas y cómo activarlas (botón, asterisco o atajo)','Tipos de viñetas y cómo personalizarlas en Word','Sangría izquierda, de primera línea y francesa (colgante)','Aumentar/disminuir sangría con Tab y Shift+Tab','Diferencia entre viñetas y listas numeradas','Atajos de teclado esenciales en Word y Google Docs'],
+    s11icons:['📌','🎨','↔️','⌨️','🔢','⚡'],
+    s11restart:'↺ Reiniciar taller', s11repeat:'Repetir →',
+    // Nav shared
+    btnPrev:'← Anterior', btnNext:'Siguiente →',
+    // Speak audio
+    speak:[
+      'Bienvenido al taller de Wrobit. Hoy aprenderás a organizar tus documentos usando viñetas y sangría. Conocerás los tipos de viñetas, los tres tipos de sangría más importantes y los atajos de teclado esenciales.',
+      'Las viñetas son símbolos que ponemos al inicio de cada elemento de una lista. Sin viñetas el texto queda todo junto y es difícil de leer. Con viñetas cada elemento está separado. Son ideales cuando el orden no importa.',
+      'Hay tres formas de crear una lista con viñetas. La primera es hacer clic en el botón de viñetas en la pestaña Inicio. La segunda es escribir un asterisco seguido de un espacio. La tercera es usar Control más Shift más L en Word. Para salir, presiona Enter dos veces.',
+      'Word ofrece diferentes tipos de viñetas: punto relleno, guión, flecha, palomita, círculo vacío y cuadrado. También puedes personalizar el símbolo desde Inicio, Definir nueva viñeta.',
+      'La sangría es el espacio entre el margen del documento y el inicio del texto. La sangría izquierda mueve todo el párrafo hacia adentro. Puedes ajustarla arrastrando los marcadores en la regla horizontal de Word.',
+      'Dentro de una lista, presiona Tab para aumentar la sangría. Presiona Shift más Tab para disminuirla. Cada nivel puede tener un símbolo diferente.',
+      'La sangría de primera línea desplaza solo la primera línea del párrafo hacia adentro. Se configura en Formato, Párrafo, Sangría especial, Primera línea. El valor estándar APA es uno punto veinticinco centímetros.',
+      'La sangría francesa hace lo contrario a la de primera línea. La primera línea queda al margen y las siguientes se desplazan hacia adentro. Es obligatoria en APA séptima edición para referencias bibliográficas.',
+      'Usa viñetas cuando el orden no importa. Usa listas numeradas cuando el orden sí importa. Evita mezclar ambos tipos en el mismo nivel.',
+      'Los atajos esenciales: Tab para aumentar sangría en lista, Shift más Tab para disminuirla, Control Shift L para viñetas, Control M para aumentar sangría de párrafo.',
+      '¡Felicitaciones! Completaste el taller de viñetas y sangría de Wrobit. Ahora eres un experto en formato.'
+    ]
+  },
+  en: {
+    hTitle:'Wrobit Simulator — Learn STEAM', hSub:'Workshop: Bullets & Indentation in Word',
+    stepWord:'Step', ofWord:'of', speakTxt:'Listen', stopTxt:'Stop', langBtn:'🌐 ES',
+    // Step 1
+    s1bubble:'Hi! I\'m <strong>Wrobit</strong> 🤖 Today you\'ll learn to organize your documents using <strong>bullets</strong> and <strong>indentation</strong>. Get ready to practice!',
+    s1badge:'WORKSHOP · STEP 1', s1title:'Welcome to the workshop!',
+    s1i1:'You\'ll learn what <strong>bullet points</strong> are and their types',
+    s1i2:'You\'ll discover how <strong>indentation</strong> works',
+    s1i3:'You\'ll master essential <strong>keyboard shortcuts</strong>',
+    s1i4:'You\'ll earn an <strong>expert badge</strong>',
+    s1btnStart:'Start! →',
+    // Step 2
+    s2bubble:'<strong>Bullet points</strong> are symbols placed at the start of each list item. They make information much easier to read!',
+    s2badge:'CONCEPT · STEP 2', s2title:'What are bullet points?',
+    s2before:'❌ Without bullets', s2beforeText:'Apples Pears Grapes Bananas Strawberries — all together, hard to read.',
+    s2after:'✅ With bullets', s2afterText:'• Apples<br>• Pears<br>• Grapes<br>• Bananas<br>• Strawberries',
+    s2info1:'💡 What are they for?', s2info2:'Bullets organize information into a list, make text clearer, and help readers find key points easily.',
+    // Step 3
+    s3bubble:'Did you know there are three ways to activate bullets? I\'ll show you all of them — pick your favorite.',
+    s3badge:'HOW TO · STEP 3', s3title:'Creating your first list',
+    s3m1:'Toolbar button', s3m1d:'<strong>Home</strong> tab → <strong>Bullets ☰</strong> button. The most visual way.',
+    s3m2:'Auto asterisk', s3m2d:'Type <kbd>*</kbd> followed by a space → Word / Docs converts it to a bullet automatically.',
+    s3m3:'Keyboard shortcut (Word)', s3m3d:'Use <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> to toggle the bullet list.',
+    s3exit:'To exit the list: press <kbd>Enter</kbd> twice, or <kbd>Backspace</kbd> on an empty line.',
+    // Step 4
+    s4badge:'TYPES · STEP 4', s4title:'Available bullet types',
+    s4hint:'Tap one to see how it looks with the sample list:',
+    s4b1:'Filled dot', s4b2:'Dash', s4b3:'Arrow', s4b4:'Checkmark', s4b5:'Empty circle', s4b6:'Square',
+    s4previewLabel:'👆 Tap a type to see the example',
+    s4info1:'📌 Customize in Word:', s4info2:' Home → ▾ arrow next to Bullets → <em>Define New Bullet</em> → symbol, image, or Wingdings font.',
+    // Step 5
+    s5bubble:'Now let\'s talk about <strong>indentation</strong>. It\'s the space between the document margin and the start of the text. Simpler than it sounds!',
+    s5badge:'CONCEPT · STEP 5', s5title:'What is indentation?',
+    s5ex0:'No indentation (normal margin):', s5t0:'This text starts at the left margin with no offset.',
+    s5ex1:'Left indentation (1.25 cm):', s5t1:'The whole paragraph shifts inward. Useful for highlighting content.',
+    s5ex2:'Double indentation (2.5 cm):', s5t2:'Double shift. Common for long APA-format quotes.',
+    s5info1:'📐 The horizontal ruler in Word', s5info2:'Shows indentation markers you can drag visually without opening any menu.',
+    // Step 6
+    s6bubble:'Inside a list, the <strong>Tab</strong> key is your best friend for controlling indent levels without touching any menu.',
+    s6badge:'SHORTCUTS · STEP 6', s6title:'Increase and decrease indentation',
+    s6tabDesc:'Increase indent<br>(go up a level)', s6shiftDesc:'Decrease indent<br>(go down a level)',
+    s6l1:'Level 1 — no Tab', s6l2:'Level 2 — one Tab', s6l3:'Level 3 — two Tab', s6l4:'Level 2 — Shift+Tab', s6l5:'Level 1 — Shift+Tab',
+    // Step 7
+    s7badge:'INDENT TYPES · STEP 7', s7title:'First-line indentation',
+    s7intro:'Shifts <em>only the first line</em> of the paragraph inward. The classic way to separate paragraphs in academic and formal texts.',
+    s7before:'No indentation', s7beforeText:'This paragraph has no indent. All lines start at the same left margin.',
+    s7after:'With first-line indent', s7afterText:'This paragraph has a first-line indent. Only the first line is indented, visually separating the content.',
+    s7how:'How to configure it', s7howText:'Format → Paragraph → Special indent → <strong>First line</strong> → value: <strong>1.25 cm</strong> (APA standard).',
+    // Step 8
+    s8bubble:'<strong>Hanging indentation</strong> is the favorite of academic formats like APA. The first line stays at the margin and the rest indent inward!',
+    s8badge:'INDENT TYPES · STEP 8', s8title:'Hanging indentation',
+    s8intro:'The first line stays at the margin and the following lines shift inward.',
+    s8label:'Example — APA References',
+    s8info1:'📚 Required in APA 7th edition', s8info2:'Path: Format → Paragraph → Special → <strong>Hanging</strong>. Standard value: 1.27 cm.',
+    // Step 9
+    s9badge:'COMPARISON · STEP 9', s9title:'Bullets vs. numbered lists',
+    s9intro:'Choose the right type based on the content you are presenting.',
+    s9bullets:'• Bullets — when:', s9bulletsText:'• Order does not matter<br>• Equivalent items<br>• Material lists<br>• Characteristics',
+    s9numbered:'1. Numbered — when:', s9numberedText:'1. Order matters<br>2. Steps or instructions<br>3. Rankings or priorities<br>4. Sequence of events',
+    s9warn:'⚠️ Avoid mixing types:', s9warnText:' Use only one type per hierarchy level to maintain visual consistency.',
+    // Step 10
+    s10bubble:'These are the shortcuts <strong>professionals</strong> use! Memorize them and you\'ll work twice as fast.',
+    s10badge:'SHORTCUTS · STEP 10', s10title:'Essential keyboard shortcuts',
+    sk1:'Increase indent (in list)', sk2:'Decrease indent (in list)',
+    sk3:'Bullet list (Word)', sk4:'Increase indent (paragraph)',
+    sk5:'Decrease indent (paragraph)', sk6:'Open paragraph options',
+    s10tip:'💡 Wrobit tip:', s10tipText:' Practice these shortcuts 5 minutes a day for a week and they\'ll become automatic.',
+    s10btnNext:'Finish →',
+    // Step 11
+    s11title:'Workshop completed!', s11sub:'You master bullets and indentation in word processors',
+    s11badge:'Badge: Formatting Expert', s11reviewLabel:'What you learned',
+    s11items:['What bullet points are and how to activate them (button, asterisk, or shortcut)','Bullet types and how to customize them in Word','Left indent, first-line indent, and hanging indent','Increase/decrease indent with Tab and Shift+Tab','Difference between bullet lists and numbered lists','Essential keyboard shortcuts in Word and Google Docs'],
+    s11icons:['📌','🎨','↔️','⌨️','🔢','⚡'],
+    s11restart:'↺ Restart workshop', s11repeat:'Repeat →',
+    // Nav shared
+    btnPrev:'← Previous', btnNext:'Next →',
+    // Speak audio (normal translation for UI, but we'll use phonetic for TTS)
+    speak:[
+      'Welcome to the Wrobit workshop. Today you will learn to organize your documents using bullets and indentation. You will learn bullet types, the three most important indentation types, and essential keyboard shortcuts.',
+      'Bullet points are symbols placed at the start of each list item. Without bullets text runs together and is hard to read. With bullets each item is separated. They are ideal when order does not matter.',
+      'There are three ways to create a bullet list. First: click the bullet button in the Home tab. Second: type an asterisk followed by a space. Third: use Control plus Shift plus L in Word. To exit, press Enter twice.',
+      'Word offers different bullet types: filled dot, dash, arrow, checkmark, empty circle, and square. You can also customize the symbol from Home, Define New Bullet.',
+      'Indentation is the space between the document margin and the start of the text. Left indentation moves the entire paragraph inward. You can adjust it by dragging the markers on the horizontal ruler in Word.',
+      'Inside a list, press Tab to increase indentation. Press Shift plus Tab to decrease it. Each level can have a different symbol.',
+      'First-line indentation shifts only the first line of the paragraph inward. Configure it in Format, Paragraph, Special indentation, First line. The APA standard value is one point two five centimeters.',
+      'Hanging indentation does the opposite of first-line. The first line stays at the margin and the following lines shift inward. It is required in APA seventh edition for the reference list.',
+      'Use bullets when order does not matter. Use numbered lists when order matters. Avoid mixing both types on the same level.',
+      'Essential shortcuts: Tab to increase indent in a list, Shift plus Tab to decrease it, Control Shift L for bullets, Control M to increase paragraph indentation.',
+      'Congratulations! You completed the Wrobit bullets and indentation workshop. You are now a formatting expert.'
+    ],
+    // NEW: Phonetic version for TTS when language is English (reads as Spanish would sound)
+    speakPhonetic: [
+      'Bee-en-vee-nee-doh al tah-yer de Ro-bit. Oy ah-pren-deh-rahs ah or-gah-nee-sar toos do-koo-men-tos oo-sahn-do vee-nyeh-tahs ee sahn-gree-ah. Koh-noh-seh-rahs lohs tee-pos deh vee-nyeh-tahs, lohs tres tee-pos deh sahn-gree-ah mahs eem-por-tahn-tes ee lohs ah-tah-hos deh teh-klah-doh eh-sen-see-ah-les.',
+      'Lahs vee-nyeh-tahs son seem-boh-lohs keh poh-neh-mohs al ee-nee-see-oh deh kah-dah eh-leh-men-toh deh oo-nah lees-tah. Seen vee-nyeh-tahs el teks-toh keh-dah toh-ho hoon-toh ee es dee-fee-seel deh leh-ehr. Kon vee-nyeh-tahs kah-dah eh-leh-men-toh es-tah seh-pah-rah-doh. Son ee-dee-ah-les koo-ahn-doh el or-dehn no eem-por-tah.',
+      'Eye tres for-mahs deh kreh-ar oo-nah lees-tah kon vee-nyeh-tahs. Lah pree-meh-rah es ah-sehr kleek en el boh-ton deh vee-nyeh-tahs en lah pes-tah-nyah Ee-nee-see-oh. Lah seh-goon-dah es ehs-kree-beer oon ahs-teh-rees-koh seh-gee-doh deh oon ehs-pah-see-oh. Lah ter-seh-rah es oo-sar Kon-trol mahs Shift mahs Eh-leh en Word. Pah-rah sah-leer, preh-see-oh-nah En-ter dos veh-ses.',
+      'Word oh-freh-seh dee-feh-ren-tes tee-pos deh vee-nyeh-tahs: poon-toh reh-yeh-noh, gee-on, fleh-chah, pah-loh-mee-tah, seer-koo-loh vah-see-oh ee koo-ah-drah-doh. Tahm-bee-en poo-eh-des per-soh-nah-lee-sar el seem-boh-loh des-de Ee-nee-see-oh, Deh-fee-neer noo-eh-vah vee-nyeh-tah.',
+      'Lah sahn-gree-ah es el ehs-pah-see-oh en-treh el mar-hen del do-koo-men-toh ee el ee-nee-see-oh del teks-toh. Lah sahn-gree-ah ees-kyehr-dah moo-eh-veh toh-doh el pah-rah-foh ah-see-ah ah-den-troh. Poo-eh-des ah-hoos-tar-lah ah-rrahs-tran-doh lohs mar-kah-doh-res en lah reh-glah oh-ree-son-tal deh Word.',
+      'Den-troh deh oo-nah lees-tah, preh-see-oh-nah Tab pah-rah oo-men-tar lah sahn-gree-ah. Preh-see-oh-nah Shift mahs Tab pah-rah dees-mee-noo-eer-lah. Kah-dah nee-vel poo-eh-deh te-nehr oon seem-boh-loh dee-feh-ren-teh.',
+      'Lah sahn-gree-ah deh pree-meh-rah lee-neh-ah dehs-plah-sah soh-loh lah pree-meh-rah lee-neh-ah del pah-rah-foh ah-see-ah ah-den-troh. Seh kon-fee-goo-rah en For-mah-toh, Pah-rah-foh, Sahn-gree-ah ehs-peh-see-al, Pree-meh-rah lee-neh-ah. El vah-lor ehs-tahn-dar Ah-Peh-Ah es oo-noh poon-toh vein-tee-seen-koh sen-tee-meh-tros.',
+      'Lah sahn-gree-ah frahn-seh-sah ah-seh loh kon-trah-ree-oh ah lah deh pree-meh-rah lee-neh-ah. Lah pree-meh-rah lee-neh-ah keh-dah al mar-hen ee lahs see-gee-en-tes seh dehs-plah-sahn ah-see-ah ah-den-troh. Es oh-blee-gah-toh-ree-ah en Ah-Peh-Ah sep-tee-mah eh-dee-see-on pah-rah reh-feh-ren-see-ahs bee-blee-oh-grah-fee-kahs.',
+      'Oo-sah vee-nyeh-tahs koo-ahn-doh el or-dehn no eem-por-tah. Oo-sah lees-tahs noo-meh-rah-dahs koo-ahn-doh el or-dehn see eem-por-tah. Eh-vee-tah mehs-klahr ahm-bohs tee-pos en el mees-moh nee-vel.',
+      'Lohs ah-tah-hos eh-sen-see-ah-les: Tab pah-rah oo-men-tar sahn-gree-ah en lees-tah, Shift mahs Tab pah-rah dees-mee-noo-eer-lah, Kon-trol Shift Eh-leh pah-rah vee-nyeh-tahs, Kon-trol Eh-meh pah-rah oo-men-tar sahn-gree-ah deh pah-rah-foh.',
+      'Feh-lee-see-tah-see-oh-nes! Kom-pleh-tahs-teh el tah-yer deh vee-nyeh-tahs ee sahn-gree-ah deh Ro-bit. Ah-oh-rah eh-res oon eks-pehr-toh en for-mah-toh.'
+    ]
+  }
+};
+
+// ════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════
+let currentStep = 1;
+const totalSteps = 11;
+let currentLang = localStorage.getItem('wrobit_lang') || 'es';
+let isSpeaking = false;
+let speechRate = 1.0;
+
+const savedStep = localStorage.getItem('wrobit_step');
+if (savedStep) currentStep = parseInt(savedStep);
+
+// ════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  applyLang(currentLang);
+  showStep(currentStep);
+});
+
+// ════════════════════════════════════════════════════════
+//  APPLY LANGUAGE — renders ALL translatable elements
+// ════════════════════════════════════════════════════════
+function applyLang(lang) {
+  const T = UI[lang];
+  document.documentElement.lang = lang;
+
+  // Helper: set element content (innerHTML if it contains HTML tags)
+  function set(id, val) {
+    const el = document.getElementById(id);
+    if (!el || val === undefined) return;
+    if (/<[a-z]/i.test(val)) el.innerHTML = val;
+    else el.textContent = val;
+  }
+
+  // Header
+  set('hTitle', T.hTitle); set('hSub', T.hSub);
+
+  // Voice bar
+  set('speakTxt', isSpeaking ? T.stopTxt : T.speakTxt);
+  set('btnLang', T.langBtn);
+
+  // Step 1
+  set('s1bubble',T.s1bubble); set('s1badge',T.s1badge); set('s1title',T.s1title);
+  set('s1i1',T.s1i1); set('s1i2',T.s1i2); set('s1i3',T.s1i3); set('s1i4',T.s1i4);
+  set('s1btnStart',T.s1btnStart);
+
+  // Step 2
+  set('s2bubble',T.s2bubble); set('s2badge',T.s2badge); set('s2title',T.s2title);
+  set('s2before',T.s2before); set('s2beforeText',T.s2beforeText);
+  set('s2after',T.s2after); set('s2afterText',T.s2afterText);
+  set('s2info1',T.s2info1); set('s2info2',T.s2info2);
+  set('s2btnPrev',T.btnPrev); set('s2btnNext',T.btnNext);
+
+  // Step 3
+  set('s3bubble',T.s3bubble); set('s3badge',T.s3badge); set('s3title',T.s3title);
+  set('s3m1',T.s3m1); set('s3m1d',T.s3m1d);
+  set('s3m2',T.s3m2); set('s3m2d',T.s3m2d);
+  set('s3m3',T.s3m3); set('s3m3d',T.s3m3d); set('s3exit',T.s3exit);
+  set('s3btnPrev',T.btnPrev); set('s3btnNext',T.btnNext);
+
+  // Step 4
+  set('s4badge',T.s4badge); set('s4title',T.s4title); set('s4hint',T.s4hint);
+  set('s4b1',T.s4b1); set('s4b2',T.s4b2); set('s4b3',T.s4b3);
+  set('s4b4',T.s4b4); set('s4b5',T.s4b5); set('s4b6',T.s4b6);
+  set('s4previewLabel',T.s4previewLabel);
+  set('s4info1',T.s4info1); set('s4info2',T.s4info2);
+  set('s4btnPrev',T.btnPrev); set('s4btnNext',T.btnNext);
+  // Reset bullet preview label on lang change
+  document.getElementById('bulletPreviewContent').innerHTML = '';
+
+  // Step 5
+  set('s5bubble',T.s5bubble); set('s5badge',T.s5badge); set('s5title',T.s5title);
+  set('s5ex0',T.s5ex0); set('s5t0',T.s5t0);
+  set('s5ex1',T.s5ex1); set('s5t1',T.s5t1);
+  set('s5ex2',T.s5ex2); set('s5t2',T.s5t2);
+  set('s5info1',T.s5info1); set('s5info2',T.s5info2);
+  set('s5btnPrev',T.btnPrev); set('s5btnNext',T.btnNext);
+
+  // Step 6
+  set('s6bubble',T.s6bubble); set('s6badge',T.s6badge); set('s6title',T.s6title);
+  set('s6tabDesc',T.s6tabDesc); set('s6shiftDesc',T.s6shiftDesc);
+  set('s6l1',T.s6l1); set('s6l2',T.s6l2); set('s6l3',T.s6l3);
+  set('s6l4',T.s6l4); set('s6l5',T.s6l5);
+  set('s6btnPrev',T.btnPrev); set('s6btnNext',T.btnNext);
+
+  // Step 7
+  set('s7badge',T.s7badge); set('s7title',T.s7title); set('s7intro',T.s7intro);
+  set('s7before',T.s7before); set('s7beforeText',T.s7beforeText);
+  set('s7after',T.s7after); set('s7afterText',T.s7afterText);
+  set('s7how',T.s7how); set('s7howText',T.s7howText);
+  set('s7btnPrev',T.btnPrev); set('s7btnNext',T.btnNext);
+
+  // Step 8
+  set('s8bubble',T.s8bubble); set('s8badge',T.s8badge); set('s8title',T.s8title);
+  set('s8intro',T.s8intro); set('s8label',T.s8label);
+  set('s8info1',T.s8info1); set('s8info2',T.s8info2);
+  set('s8btnPrev',T.btnPrev); set('s8btnNext',T.btnNext);
+
+  // Step 9
+  set('s9badge',T.s9badge); set('s9title',T.s9title); set('s9intro',T.s9intro);
+  set('s9bullets',T.s9bullets); set('s9bulletsText',T.s9bulletsText);
+  set('s9numbered',T.s9numbered); set('s9numberedText',T.s9numberedText);
+  set('s9warn',T.s9warn); set('s9warnText',T.s9warnText);
+  set('s9btnPrev',T.btnPrev); set('s9btnNext',T.btnNext);
+
+  // Step 10
+  set('s10bubble',T.s10bubble); set('s10badge',T.s10badge); set('s10title',T.s10title);
+  set('sk1',T.sk1); set('sk2',T.sk2); set('sk3',T.sk3);
+  set('sk4',T.sk4); set('sk5',T.sk5); set('sk6',T.sk6);
+  set('s10tip',T.s10tip); set('s10tipText',T.s10tipText);
+  set('s10btnPrev',T.btnPrev); set('s10btnNext',T.s10btnNext);
+
+  // Step 11
+  set('s11title',T.s11title); set('s11sub',T.s11sub);
+  set('s11badge',T.s11badge); set('s11reviewLabel',T.s11reviewLabel);
+  set('s11restart',T.s11restart); set('s11repeat',T.s11repeat);
+  // Review list
+  const list = document.getElementById('s11list');
+  list.innerHTML = T.s11items.map((item,i) =>
+    `<li><span class="ri">${T.s11icons[i]}</span><span>${item}</span></li>`
+  ).join('');
+}
+
+// ════════════════════════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════════════════════════
+function showStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateProgress();
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  setTTSState(false);
+  localStorage.setItem('wrobit_step', n);
+}
+
+function nextStep() {
+  if (currentStep < totalSteps) { currentStep++; showStep(currentStep); }
+}
+function prevStep() {
+  if (currentStep > 1) { currentStep--; showStep(currentStep); }
+}
+function restartTaller() {
+  currentStep = 1;
+  localStorage.removeItem('wrobit_step');
+  showStep(1);
+}
+function updateProgress() {
+  const pct = Math.round((currentStep / totalSteps) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  const T = UI[currentLang];
+  document.getElementById('stepLabel').textContent = T.stepWord + ' ' + currentStep + ' ' + T.ofWord + ' ' + totalSteps;
+  document.getElementById('pct').textContent = pct + '%';
+}
+
+// ════════════════════════════════════════════════════════
+//  BULLET PREVIEW
+// ════════════════════════════════════════════════════════
+function selectBullet(el, sym) {
+  document.querySelectorAll('.bullet-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const items = currentLang === 'es'
+    ? ['🍎 Manzana','🍐 Pera','🍊 Naranja','🫐 Arándano','🍓 Fresa']
+    : ['🍎 Apple','🍐 Pear','🍊 Orange','🫐 Blueberry','🍓 Strawberry'];
+  document.getElementById('bulletPreview').querySelector('.label').textContent =
+    currentLang === 'es' ? 'Ejemplo con este tipo:' : 'Example with this type:';
+  document.getElementById('bulletPreviewContent').innerHTML =
+    items.map(i => `<div style="padding:2px 0;font-size:14px;">${sym} ${i}</div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════
+//  CONFETTI
+// ════════════════════════════════════════════════════════
+function launchConfetti() {
+  const colors = ['#44bcf9','#e63289','#f59e0b','#059669','#7dd9fc','#f06db0','#fbbf24'];
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `left:${Math.random()*100}vw;top:-20px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*1.5}s;width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;${Math.random()>.5?'border-radius:50%':''}`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  LANGUAGE TOGGLE
+// ════════════════════════════════════════════════════════
+function toggleLang() {
+  currentLang = currentLang === 'es' ? 'en' : 'es';
+  localStorage.setItem('wrobit_lang', currentLang);
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  setTTSState(false);
+  applyLang(currentLang);
+  updateProgress();
+}
+
+// ════════════════════════════════════════════════════════
+//  TTS — Spanish: chunked Web Speech API
+//       English:  improved voice selection (user's method)
+// ════════════════════════════════════════════════════════
+function setTTSState(on) {
+  isSpeaking = on;
+  const T = UI[currentLang];
+  document.getElementById('speakTxt').textContent = on ? T.stopTxt : T.speakTxt;
+  document.getElementById('btnSpeak').classList.toggle('speaking', on);
+  document.getElementById('vbWave').classList.toggle('active', on);
+  document.getElementById('vbRobot').classList.toggle('talking', on);
+}
+
+// ── English: force best available en-US voice, but use PHONETIC text ──────────
+function speakEnglish(phoneticText, rate) {
+  const synth = window.speechSynthesis;
+  synth.cancel();
+
+  function speakNow() {
+    const voices = synth.getVoices();
+    if (!voices.length) { setTimeout(speakNow, 100); return; }
+
+    const voice =
+      voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) ||
+      voices.find(v => v.lang === 'en-GB') ||
+      voices.find(v => v.lang.startsWith('en'));
+
+    // Chunk by sentence for reliability
+    const chunks = phoneticText.match(/[^.!?]+[.!?]+/g) || [phoneticText];
+    let idx = 0;
+
+    function next() {
+      if (idx >= chunks.length) { setTTSState(false); return; }
+      const u = new SpeechSynthesisUtterance(chunks[idx++].trim());
+      u.voice   = voice || null;
+      u.lang    = 'en-US';
+      u.rate    = rate;
+      u.pitch   = 1;
+      u.volume  = 1;
+      u.onend   = next;
+      u.onerror = next;
+      synth.speak(u);
+    }
+
+    setTTSState(true);
+    next();
+  }
+
+  speakNow();
+}
+
+// ── Spanish: standard Web Speech API with Google es voice ──
+function speakSpanish(text, rate) {
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  const voices = synth.getVoices();
+  const voice =
+    voices.find(v => v.lang === 'es-MX' && v.name.includes('Google')) ||
+    voices.find(v => v.lang === 'es-ES' && v.name.includes('Google')) ||
+    voices.find(v => v.lang.startsWith('es'));
+
+  const chunks = text.match(/[^.!?]+[.!?]+/g) || [text];
+  let idx = 0;
+
+  function next() {
+    if (idx >= chunks.length) { setTTSState(false); return; }
+    const u = new SpeechSynthesisUtterance(chunks[idx++].trim());
+    u.voice  = voice || null;
+    u.lang   = 'es-MX';
+    u.rate   = rate;
+    u.pitch  = 1;
+    u.volume = 1;
+    u.onend  = next;
+    u.onerror = next;
+    synth.speak(u);
+  }
+
+  setTTSState(true);
+  setTimeout(next, 150);
+}
+
+function speakStep(n) {
+  // Determine which text to use for TTS
+  let textToSpeak;
+  if (currentLang === 'en') {
+    // Use the phonetic version for English TTS
+    textToSpeak = UI.en.speakPhonetic[n - 1];
+  } else {
+    // Use normal Spanish text for Spanish TTS
+    textToSpeak = UI.es.speak[n - 1];
+  }
+
+  if (!textToSpeak) return;
+
+  if (currentLang === 'en') {
+    speakEnglish(textToSpeak, speechRate);
+  } else {
+    speakSpanish(textToSpeak, speechRate);
+  }
+}
+
+function toggleSpeak() {
+  if (isSpeaking) {
+    window.speechSynthesis && window.speechSynthesis.cancel();
+    setTTSState(false);
+  } else {
+    speakStep(currentStep);
+  }
+}
+
+function setSpeed(rate) {
+  speechRate = rate;
+  document.querySelectorAll('.speed-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.getAttribute('data-rate')) === rate);
+  });
+  if (isSpeaking) {
+    window.speechSynthesis && window.speechSynthesis.cancel();
+    setTTSState(false);
+    setTimeout(() => speakStep(currentStep), 200);
+  }
+}
+</script>
+</body>
+</html>
