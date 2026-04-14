@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wrobit — Mi Ficha de Animal Favorito</title>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=IBM+Plex+Sans+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --p:#44bcf9;--pl:#dff4ff;--pm:#7dd9fc;
+  --a:#e63289;--al:#ffd9ec;--am:#f06db0;
+  --amb:#f59e0b;--ambl:#fef3c7;
+  --g:#059669;--gl:#d1fae5;
+  --r:#dc2626;--rl:#fee2e2;
+  --dark:#060036;--bg:#ededed;
+  --white:#fff;--txt:#0d0026;--muted:#5a5a7a;
+  --sh:0 4px 20px rgba(0,0,0,.09);--rad:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans Condensed',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden}
+
+.hdr{background:linear-gradient(135deg,var(--p),var(--a));color:#fff;padding:14px 18px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh)}
+.hdr-logo{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.hdr-title{font-family:'Russo One',sans-serif;font-size:17px;line-height:1.1}
+.hdr-sub{font-size:12px;opacity:.85;margin-top:2px}
+
+.stars-bar{background:var(--dark);padding:6px 18px;display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,.7)}
+.stars-bar .sd{letter-spacing:3px;font-size:16px}
+
+.prog-wrap{background:#d5d5d5;border-radius:99px;height:10px;margin:12px 16px 2px;overflow:hidden}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--p),var(--a));border-radius:99px;transition:width .5s ease}
+.prog-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-weight:600;padding:0 16px 8px}
+
+.wrap{max-width:720px;margin:0 auto;padding:0 14px 60px}
+
+.card{background:var(--white);border-radius:var(--rad);box-shadow:var(--sh);padding:22px 20px;margin:14px 0;animation:pop .3s ease}
+@keyframes pop{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.robot-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.av{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--a));display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;box-shadow:0 3px 12px rgba(68,188,249,.4)}
+.av.acc{background:linear-gradient(135deg,var(--a),var(--p));box-shadow:0 3px 12px rgba(230,50,137,.4)}
+.av.grn{background:linear-gradient(135deg,var(--g),#34d399);box-shadow:0 3px 12px rgba(5,150,105,.4)}
+.bub{background:var(--pl);border-radius:var(--rad);border-bottom-left-radius:4px;padding:11px 14px;font-size:14px;line-height:1.55;flex:1;position:relative;border:1.5px solid #b8e8fd}
+.bub::before{content:'';position:absolute;left:-9px;top:13px;border:5px solid transparent;border-right-color:var(--pl)}
+.bub.acc{background:var(--al);border-color:#f0b3d6}
+.bub.acc::before{border-right-color:var(--al)}
+.bub.grn{background:var(--gl);border-color:#6ee7b7}
+.bub.grn::before{border-right-color:var(--gl)}
+
+.badge{display:inline-block;background:linear-gradient(135deg,var(--p),var(--a));color:#fff;font-family:'Russo One',sans-serif;font-size:10px;padding:3px 10px;border-radius:99px;margin-bottom:7px;letter-spacing:.8px}
+.badge.acc{background:linear-gradient(135deg,var(--a),var(--p))}
+.badge.amb{background:linear-gradient(135deg,var(--amb),#f97316)}
+.badge.grn{background:linear-gradient(135deg,var(--g),#34d399)}
+.badge.pur{background:linear-gradient(135deg,var(--dark),#3b0d8c)}
+.title{font-family:'Russo One',sans-serif;font-size:19px;color:var(--dark);margin-bottom:10px;line-height:1.2}
+
+.info{background:var(--pl);border-left:4px solid var(--p);border-radius:0 10px 10px 0;padding:11px 14px;margin:10px 0;font-size:14px;line-height:1.6}
+.info.acc{background:var(--al);border-color:var(--a)}
+.info.amb{background:var(--ambl);border-color:var(--amb)}
+.info.grn{background:var(--gl);border-color:var(--g)}
+.info.pur{background:#f0eeff;border-color:#7c3aed}
+
+.act-hdr{display:flex;align-items:center;gap:8px;margin:14px 0 8px}
+.act-badge{background:var(--a);color:#fff;font-family:'Russo One',sans-serif;font-size:11px;padding:4px 12px;border-radius:99px}
+.act-badge.p{background:var(--p);color:var(--dark)}
+.act-badge.g{background:var(--g)}
+.act-badge.amb{background:var(--amb)}
+.act-title{font-size:15px;font-weight:700;color:var(--dark)}
+
+/* ─ ANIMAL GRID ─ */
+.animal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+.an-card{background:#f4f4f4;border:2.5px solid #d8d8d8;border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .15s;user-select:none}
+.an-card:hover{background:var(--pl);border-color:var(--pm);transform:translateY(-2px)}
+.an-card.sel{background:var(--pl);border-color:var(--p);box-shadow:0 0 0 3px rgba(68,188,249,.25)}
+.an-emoji{font-size:30px;margin-bottom:4px}
+.an-name{font-size:11px;font-weight:700;color:var(--dark)}
+
+/* ─ WORD SIMULATOR ─ */
+.word-sim{border:1.5px solid #d8d8d8;border-radius:10px;overflow:hidden;margin:12px 0}
+.word-tb{background:var(--pl);padding:7px 10px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1.5px solid #b8e8fd;align-items:center}
+.tbtn{background:#fff;border:1.5px solid var(--pm);border-radius:7px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;color:var(--dark);font-family:'IBM Plex Sans Condensed',sans-serif;transition:all .15s;white-space:nowrap}
+.tbtn:hover{background:var(--p);color:#fff;border-color:var(--p)}
+.tbtn.on{background:var(--p);color:#fff;border-color:var(--p)}
+.tbtn:disabled{opacity:.4;cursor:not-allowed}
+.word-body{background:#fff;padding:14px 16px;font-size:14px;line-height:1.9}
+
+/* ─ TABLE BUILDER ─ */
+.tbl-builder{width:100%;border-collapse:collapse;margin:10px 0}
+.tbl-builder th{background:var(--dark);color:#fff;font-family:'Russo One',sans-serif;font-size:12px;padding:10px 12px;border:1.5px solid #3a3d5c;text-align:left;font-weight:400}
+.tbl-builder td{border:1.5px solid #d8d8d8;padding:0}
+.tbl-builder td input{width:100%;border:none;outline:none;padding:9px 12px;font-family:'IBM Plex Sans Condensed',sans-serif;font-size:14px;background:transparent;color:var(--txt)}
+.tbl-builder td input:focus{background:var(--pl)}
+.tbl-builder td input::placeholder{color:#bbb}
+.tbl-builder .row-lbl{background:#f4f4f4;font-weight:700;font-size:13px;padding:9px 12px;color:var(--dark);border:1.5px solid #d8d8d8;white-space:nowrap}
+
+/* ─ IMAGE PICKER ─ */
+.img-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.img-opt{background:#f4f4f4;border:2.5px solid #d8d8d8;border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;transition:all .15s;user-select:none}
+.img-opt:hover{border-color:var(--pm);background:var(--pl);transform:translateY(-2px)}
+.img-opt.sel{border-color:var(--p);background:var(--pl);box-shadow:0 0 0 3px rgba(68,188,249,.2)}
+.img-opt .ie{font-size:36px;margin-bottom:4px}
+.img-opt .il{font-size:11px;color:var(--muted);font-weight:700}
+
+/* ─ IMAGE FRAME SIMULATOR ─ */
+.img-frame{border:2.5px dashed #d8d8d8;border-radius:10px;padding:20px;text-align:center;background:#f9f9f9;margin:10px 0;transition:all .3s}
+.img-frame.filled{border-style:solid;border-color:var(--pm);background:var(--pl)}
+.img-frame .if-emoji{font-size:64px;margin-bottom:8px;display:block}
+.img-frame .if-lbl{font-size:13px;color:var(--muted)}
+
+/* ─ FICHA PREVIEW ─ */
+.ficha{border:3px solid var(--dark);border-radius:12px;overflow:hidden;margin:12px 0;font-family:'IBM Plex Sans Condensed',sans-serif}
+.ficha-header{background:linear-gradient(135deg,var(--dark),#1a0066);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:14px}
+.ficha-header .fh-emoji{font-size:48px}
+.ficha-header .fh-name{font-family:'Russo One',sans-serif;font-size:22px;color:var(--p)}
+.ficha-header .fh-type{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+.ficha-img{background:linear-gradient(135deg,var(--pl),var(--al));padding:20px;text-align:center;border-bottom:2px solid #d8d8d8}
+.ficha-img .fi-emoji{font-size:80px}
+.ficha-img .fi-caption{font-size:12px;color:var(--muted);margin-top:6px;font-style:italic}
+.ficha-table{width:100%;border-collapse:collapse}
+.ficha-table td{border:1.5px solid #e0e0e0;padding:9px 14px;font-size:13px}
+.ficha-table .ft-lbl{background:#f4f4f4;font-weight:700;color:var(--dark);width:38%}
+.ficha-table .ft-val{color:var(--txt)}
+.ficha-desc{padding:14px 16px;font-size:13px;line-height:1.7;color:var(--txt);border-top:2px solid #e0e0e0;background:#fafafa}
+.ficha-footer{background:var(--dark);color:rgba(255,255,255,.6);font-size:11px;padding:6px 14px;text-align:right}
+
+/* ─ FORM FIELDS ─ */
+.form-field{margin:10px 0}
+.form-field label{display:block;font-size:13px;font-weight:700;color:var(--dark);margin-bottom:5px}
+.form-field input,.form-field select,.form-field textarea{width:100%;border:1.5px solid #d8d8d8;border-radius:8px;padding:9px 12px;font-family:'IBM Plex Sans Condensed',sans-serif;font-size:14px;color:var(--txt);outline:none;transition:border-color .15s}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--pm);box-shadow:0 0 0 3px rgba(68,188,249,.12)}
+.form-field textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0}
+
+/* ─ COLUMN DEMO ─ */
+.col-demo{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1.5px solid #d8d8d8;border-radius:10px;overflow:hidden;margin:10px 0}
+.col-cell{padding:10px;text-align:center;border-right:1.5px solid #d8d8d8;font-size:13px}
+.col-cell:last-child{border-right:none}
+.col-cell.hd{background:var(--dark);color:#fff;font-weight:700;font-size:12px;font-family:'Russo One',sans-serif}
+
+/* ─ CHECK ─ */
+.check{display:none;font-size:13px;font-weight:700;text-align:center;margin-top:10px;padding:10px;background:var(--gl);color:var(--g);border-radius:10px;animation:pop .3s ease}
+.check.show{display:block}
+
+/* ─ COUNTER ─ */
+.ctr{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-top:6px}
+.ctr-n{font-weight:700;color:var(--p)}
+
+/* ─ QUIZ ─ */
+.quiz-q{font-size:15px;font-weight:700;margin-bottom:10px;color:var(--dark)}
+.quiz-opts{list-style:none}
+.qopt{background:#f4f4f4;border:2px solid #d8d8d8;border-radius:10px;padding:10px 14px;margin:6px 0;cursor:pointer;font-size:14px;transition:all .15s;user-select:none}
+.qopt:hover:not(.ok):not(.err){border-color:var(--pm);background:var(--pl)}
+.qopt.ok{border-color:var(--g);background:var(--gl);color:var(--g);font-weight:700}
+.qopt.err{border-color:var(--r);background:var(--rl);color:var(--r)}
+.fb{font-size:13px;font-weight:700;padding:8px 12px;border-radius:10px;display:none;margin-top:6px}
+.fb.show{display:block}
+.fb.ok{background:var(--gl);color:var(--g)}
+.fb.err{background:var(--rl);color:var(--r)}
+
+/* ─ CELEBRATION ─ */
+.celeb{text-align:center;padding:14px 0}
+.celeb .em{font-size:68px;display:block;margin-bottom:12px;animation:bop .9s ease infinite alternate}
+@keyframes bop{from{transform:translateY(0)} to{transform:translateY(-10px)}}
+.celeb h2{font-family:'Russo One',sans-serif;font-size:24px;color:var(--dark);margin-bottom:8px}
+.celeb p{font-size:14px;color:var(--muted);line-height:1.6}
+.medal{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--p),var(--a));color:#fff;border-radius:12px;padding:12px 18px;font-size:15px;font-weight:700;margin:14px 0}
+
+/* ─ STEPS ─ */
+.step{display:none} .step.active{display:block}
+
+/* ─ DOWNLOAD ─ */
+.btn-dl{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,var(--g),#34d399);border:none;color:#fff;border-radius:10px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:'IBM Plex Sans Condensed',sans-serif;transition:opacity .15s;width:100%;margin-top:10px}
+.btn-dl:hover{opacity:.88}
+.btn-dl:disabled{opacity:.45;cursor:not-allowed}
+.dl-status{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;min-height:18px}
+
+/* ─ NAV ─ */
+.nav{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn-p{background:#fff;border:2px solid #d8d8d8;color:var(--dark);border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:'IBM Plex Sans Condensed',sans-serif;transition:all .15s}
+.btn-p:hover{background:#f0f0f0}
+.btn-n{background:linear-gradient(135deg,var(--p),var(--a));border:none;color:#fff;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'IBM Plex Sans Condensed',sans-serif;transition:opacity .15s;flex:1;min-width:120px}
+.btn-n:hover{opacity:.88}
+.btn-n:disabled{opacity:.35;cursor:not-allowed}
+
+/* ─ CONFETTI ─ */
+.cf{position:fixed;opacity:0;animation:fall 2.5s ease-in forwards;z-index:999;border-radius:2px}
+@keyframes fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+@media(max-width:480px){
+  .animal-grid{grid-template-columns:repeat(3,1fr)}
+  .img-grid{grid-template-columns:repeat(2,1fr)}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-logo">🤖</div>
+  <div>
+    <div class="hdr-title">Wrobit — Recurso 20</div>
+    <div class="hdr-sub">Mi Ficha de Animal Favorito · 5° Grado</div>
+  </div>
+</div>
+
+<div class="stars-bar">
+  <span>⭐ Estrellas:</span>
+  <span class="sd" id="starsDisp">☆☆☆☆☆☆☆☆☆☆</span>
+</div>
+
+<div class="prog-wrap"><div class="prog-bar" id="progBar" style="width:10%"></div></div>
+<div class="prog-lbl"><span id="stepLbl">Paso 1 de 10</span><span id="pct">10%</span></div>
+
+<div class="wrap">
+
+<!-- ══════════════════════════════════
+     PASO 1 — Bienvenida
+══════════════════════════════════ -->
+<div class="step active" id="step1">
+  <div class="card">
+    <div class="robot-row">
+      <div class="av">🤖</div>
+      <div class="bub">¡Hola! Hoy vas a crear una <strong>ficha informativa</strong> de tu animal favorito. Aprenderás a usar <strong>tablas</strong> e <strong>imágenes</strong> en Word para que quede súper profesional. ¡Tú mismo la diseñarás paso a paso!</div>
+    </div>
+    <div class="badge">RECURSO 20 · PASO 1</div>
+    <div class="title">¡Bienvenido al taller!</div>
+    <div style="margin:12px 0">
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eee;font-size:14px"><span style="font-size:20px">🐾</span><span>Elegirás tu <strong>animal favorito</strong></span></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eee;font-size:14px"><span style="font-size:20px">📊</span><span>Aprenderás qué es una <strong>tabla</strong> y para qué sirve</span></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eee;font-size:14px"><span style="font-size:20px">🖼️</span><span>Insertarás una <strong>imagen</strong> decorativa en tu ficha</span></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 0;font-size:14px"><span style="font-size:20px">⭐</span><span>Ganarás estrellas y verás tu <strong>ficha terminada</strong></span></div>
+    </div>
+    <div class="nav"><button class="btn-n" onclick="go(2)">¡Comenzar! →</button></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PASO 2 — ¿Qué es una tabla?
+══════════════════════════════════ -->
+<div class="step" id="step2">
+  <div class="card">
+    <div class="robot-row">
+      <div class="av">🤖</div>
+      <div class="bub">Una <strong>tabla</strong> organiza la información en cuadrículas. Tiene <strong>filas</strong> (de lado a lado) y <strong>columnas</strong> (de arriba hacia abajo). ¡Es perfecta para fichas y datos!</div>
+    </div>
+    <div class="badge">CONCEPTO · PASO 2</div>
+    <div class="title">¿Qué es una tabla en Word?</div>
+
+    <!-- Visual table anatomy -->
+    <div style="margin:12px 0">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Anatomía de una tabla:</div>
+      <div style="position:relative">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <tr>
+            <td style="background:var(--dark);color:var(--p);font-family:'Russo One',sans-serif;padding:9px 12px;border:2px solid #3a3d5c;font-size:12px">Característica</td>
+            <td style="background:var(--dark);color:var(--p);font-family:'Russo One',sans-serif;padding:9px 12px;border:2px solid #3a3d5c;font-size:12px;text-align:center">León</td>
+            <td style="background:var(--dark);color:var(--p);font-family:'Russo One',sans-serif;padding:9px 12px;border:2px solid #3a3d5c;font-size:12px;text-align:center">Delfín</td>
+          </tr>
+          <tr>
+            <td style="background:#f4f4f4;font-weight:700;padding:9px 12px;border:1.5px solid #d8d8d8">Tipo</td>
+            <td style="padding:9px 12px;border:1.5px solid #d8d8d8;text-align:center">Mamífero</td>
+            <td style="padding:9px 12px;border:1.5px solid #d8d8d8;text-align:center">Mamífero</td>
+          </tr>
+          <tr>
+            <td style="background:#f4f4f4;font-weight:700;padding:9px 12px;border:1.5px solid #d8d8d8">Hábitat</td>
+            <td style="padding:9px 12px;border:1.5px solid #d8d8d8;text-align:center">Sabana</td>
+            <td style="padding:9px 12px;border:1.5px solid #d8d8d8;text-align:center">Océano</td>
+          </tr>
+          <tr>
+            <td style="background:#f4f4f4;font-weight:700;padding:9px 12px;border:1.5px solid #d8d8d8">Alimentación</td>
+            <td style="padding:9px 12px;border:1.5px solid #d8d8d8;text-align:center">Carnívoro</td>
+            <td style="padding:9px 12px;border:1.5px solid #d8d8d8;text-align:center">Carnívoro</td>
+          </tr>
+        </table>
+        <!-- Annotations -->
+        <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px"><span style="background:var(--p);color:#fff;border-radius:4px;padding:2px 8px;font-weight:700">←→ Fila</span><span style="color:var(--muted)">= una fila horizontal</span></div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px"><span style="background:var(--a);color:#fff;border-radius:4px;padding:2px 8px;font-weight:700">↑↓ Columna</span><span style="color:var(--muted)">= una columna vertical</span></div>
+          <div style="display:flex;align-items:center;gap=6px;font-size:12px"><span style="background:var(--g);color:#fff;border-radius:4px;padding:2px 8px;font-weight:700">□ Celda</span><span style="color:var(--muted)">= cada cajita</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info">💡 <strong>En Word</strong> insertas una tabla así: pestaña <strong>Insertar</strong> → botón <strong>Tabla</strong> → seleccionas cuántas filas y columnas quieres.</div>
+
+    <div class="act-hdr"><span class="act-badge p">ACTIVIDAD</span><span class="act-title">Identifica las partes de la tabla</span></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Toca la respuesta correcta para cada pregunta:</p>
+
+    <div id="q2a" style="margin-bottom:12px">
+      <div class="quiz-q">¿Cómo se llama cada cajita individual de una tabla?</div>
+      <ul class="quiz-opts">
+        <li class="qopt" onclick="qa('q2a',this,false,'f2a')">Fila</li>
+        <li class="qopt" onclick="qa('q2a',this,true,'f2a')">Celda</li>
+        <li class="qopt" onclick="qa('q2a',this,false,'f2a')">Columna</li>
+      </ul>
+      <div class="fb" id="f2a"></div>
+    </div>
+    <div id="q2b" style="margin-bottom:12px">
+      <div class="quiz-q">Las líneas que van de <strong>arriba hacia abajo</strong> se llaman:</div>
+      <ul class="quiz-opts">
+        <li class="qopt" onclick="qa('q2b',this,false,'f2b')">Filas</li>
+        <li class="qopt" onclick="qa('q2b',this,true,'f2b')">Columnas</li>
+        <li class="qopt" onclick="qa('q2b',this,false,'f2b')">Celdas</li>
+      </ul>
+      <div class="fb" id="f2b"></div>
+    </div>
+
+    <div class="check" id="s2ok">🎉 ¡Correcto! Ya sabes las partes de una tabla. ⭐ +1 estrella</div>
+    <div class="nav">
+      <button class="btn-p" onclick="go(1)">← Anterior</button>
+      <button class="btn-n" id="btn2" onclick="go(3)" disabled>Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PASO 3 — Elige tu animal
+══════════════════════════════════ -->
+<div class="step" id="step3">
+  <div class="card">
+    <div class="robot-row">
+      <div class="av acc">🤖</div>
+      <div class="bub acc">Ahora viene la parte más emocionante: ¡elegir tu animal favorito! Será el protagonista de toda tu ficha informativa.</div>
+    </div>
+    <div class="badge acc">ACTIVIDAD · PASO 3</div>
+    <div class="title">¡Elige tu animal favorito!</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Toca el animal que quieres usar en tu ficha. También puedes escribir el tuyo propio.</p>
+
+    <div class="animal-grid" id="animalGrid">
+      <div class="an-card" onclick="pickAnimal(this,'🦁','León','Mamífero')"><div class="an-emoji">🦁</div><div class="an-name">León</div></div>
+      <div class="an-card" onclick="pickAnimal(this,'🐬','Delfín','Mamífero')"><div class="an-emoji">🐬</div><div class="an-name">Delfín</div></div>
+      <div class="an-card" onclick="pickAnimal(this,'🦅','Águila','Ave')"><div class="an-emoji">🦅</div><div class="an-name">Águila</div></div>
+      <div class="an-card" onclick="pickAnimal(this,'🐘','Elefante','Mamífero')"><div class="an-emoji">🐘</div><div class="an-name">Elefante</div></div>
+      <div class="an-card" onclick="pickAnimal(this,'🐆','Leopardo','Mamífero')"><div class="an-emoji">🐆</div><div class="an-name">Leopardo</div></div>
+      <div class="an-card" onclick="pickAnimal(this,'🦈','Tiburón','Pez')"><div class="an-emoji">🦈</div><div class="an-name">Tiburón</div></div>
+      <div class="an-card" onclick="pickAnimal(this,'🦜','Guacamayo','Ave')"><div class="an-emoji">🦜</div><div class="an-name">Guacamayo</div></div>
+      <div class="an-card" onclick="pickAnimal(this,'🐢','Tortuga','Reptil')"><div class="an-emoji">🐢</div><div class="an-name">Tortuga</div></div>
+      <div class="an-card" onclick="pickAnimal(this,'🐺','Lobo','Mamífero')"><div class="an-emoji">🐺</div><div class="an-name">Lobo</div></div>
+      <div class="an-card" onclick="pickAnimal(this,'🦊','Zorro','Mamífero')"><div class="an-emoji">🦊</div><div class="an-name">Zorro</div></div>
+      <div class="an-card" onclick="pickAnimal(this,'🦋','Mariposa','Insecto')"><div class="an-emoji">🦋</div><div class="an-name">Mariposa</div></div>
+      <div class="an-card" onclick="pickAnimal(this,'🐊','Cocodrilo','Reptil')"><div class="an-emoji">🐊</div><div class="an-name">Cocodrilo</div></div>
+    </div>
+
+    <div style="margin-top:10px;display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+      <div style="flex:1;min-width:120px">
+        <label style="font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px">¿No está tu animal? Escríbelo:</label>
+        <input type="text" id="customAnimal" placeholder="Ej: Panda, Pingüino..." style="width:100%;border:1.5px solid #d8d8d8;border-radius:8px;padding:8px 12px;font-family:'IBM Plex Sans Condensed',sans-serif;font-size:14px;outline:none" oninput="customAnimalInput()">
+      </div>
+      <div style="flex:1;min-width:100px">
+        <label style="font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px">Emoji:</label>
+        <input type="text" id="customEmoji" placeholder="🐼" maxlength="2" style="width:100%;border:1.5px solid #d8d8d8;border-radius:8px;padding:8px 12px;font-family:'IBM Plex Sans Condensed',sans-serif;font-size:18px;text-align:center;outline:none" oninput="customAnimalInput()">
+      </div>
+    </div>
+
+    <div class="check" id="s3ok">🎉 ¡Elegiste a <span id="s3anName">tu animal</span>! ⭐ +1 estrella</div>
+    <div class="nav">
+      <button class="btn-p" onclick="go(2)">← Anterior</button>
+      <button class="btn-n" id="btn3" onclick="go(4)" disabled>Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PASO 4 — Llena los datos básicos
+══════════════════════════════════ -->
+<div class="step" id="step4">
+  <div class="card">
+    <div class="robot-row">
+      <div class="av">🤖</div>
+      <div class="bub">¡Ahora vamos a recolectar la información de tu animal! Estos datos irán dentro de la tabla de tu ficha. Rellena todos los campos.</div>
+    </div>
+    <div class="badge">ACTIVIDAD · PASO 4</div>
+    <div class="title">Llena los datos de tu animal</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Completa los campos con la información de <strong id="s4anLabel">tu animal</strong>. Si no sabes algo, pon tu mejor respuesta.</p>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label>🐾 Nombre del animal</label>
+        <input type="text" id="f4name" placeholder="Ej: León" oninput="checkForm4()">
+      </div>
+      <div class="form-field">
+        <label>🔬 Tipo de animal</label>
+        <select id="f4type" onchange="checkForm4()">
+          <option value="">Selecciona...</option>
+          <option>Mamífero</option>
+          <option>Ave</option>
+          <option>Reptil</option>
+          <option>Pez</option>
+          <option>Insecto</option>
+          <option>Anfibio</option>
+          <option>Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>🌍 Hábitat (¿dónde vive?)</label>
+        <input type="text" id="f4habitat" placeholder="Ej: Sabana africana" oninput="checkForm4()">
+      </div>
+      <div class="form-field">
+        <label>🍖 Alimentación</label>
+        <select id="f4food" onchange="checkForm4()">
+          <option value="">Selecciona...</option>
+          <option>Carnívoro</option>
+          <option>Herbívoro</option>
+          <option>Omnívoro</option>
+          <option>Insectívoro</option>
+          <option>Frugívoro</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>📏 Tamaño aproximado</label>
+        <input type="text" id="f4size" placeholder="Ej: 120 cm de alto" oninput="checkForm4()">
+      </div>
+      <div class="form-field">
+        <label>🌡️ ¿Está en peligro?</label>
+        <select id="f4danger" onchange="checkForm4()">
+          <option value="">Selecciona...</option>
+          <option>No, población estable</option>
+          <option>Vulnerable</option>
+          <option>En peligro</option>
+          <option>En peligro crítico</option>
+          <option>No se sabe</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label>⚡ Una característica especial</label>
+      <input type="text" id="f4special" placeholder="Ej: Puede correr hasta 80 km/h" oninput="checkForm4()">
+    </div>
+
+    <div class="ctr">Campos completados: <span class="ctr-n" id="f4count">0</span> / 6</div>
+    <div class="check" id="s4ok">🎉 ¡Datos completos! Tu tabla ya tiene toda la información. ⭐ +1 estrella</div>
+    <div class="nav">
+      <button class="btn-p" onclick="go(3)">← Anterior</button>
+      <button class="btn-n" id="btn4" onclick="go(5)" disabled>Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PASO 5 — Cómo insertar una imagen
+══════════════════════════════════ -->
+<div class="step" id="step5">
+  <div class="card">
+    <div class="robot-row">
+      <div class="av acc">🤖</div>
+      <div class="bub acc">Una ficha sin imagen está incompleta. En Word puedes insertar fotos de Internet o de tu computadora. ¡Te enseño los pasos!</div>
+    </div>
+    <div class="badge acc">CONCEPTO · PASO 5</div>
+    <div class="title">¿Cómo insertar una imagen en Word?</div>
+
+    <!-- Steps visual -->
+    <div style="display:grid;gap:8px;margin:12px 0">
+      <div style="display:flex;gap:12px;align-items:flex-start;background:#f4f4f4;border-radius:10px;padding:12px">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Russo One',sans-serif;font-size:14px;flex-shrink:0">1</div>
+        <div><strong style="font-size:14px">Haz clic donde quieres la imagen</strong><br><span style="font-size:13px;color:var(--muted)">Coloca el cursor en el lugar del documento donde irá tu foto.</span></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;background:var(--pl);border-radius:10px;padding:12px">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--a);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Russo One',sans-serif;font-size:14px;flex-shrink:0">2</div>
+        <div><strong style="font-size:14px">Ve a la pestaña <span style="color:var(--p)">Insertar</span></strong><br><span style="font-size:13px;color:var(--muted)">Está en la barra de menú superior de Word, junto a "Inicio".</span></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;background:#f4f4f4;border-radius:10px;padding:12px">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--g);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Russo One',sans-serif;font-size:14px;flex-shrink:0">3</div>
+        <div><strong style="font-size:14px">Haz clic en <span style="color:var(--g)">Imágenes</span></strong><br><span style="font-size:13px;color:var(--muted)">Elige "Imágenes en línea" para buscar en Internet, o "Este dispositivo" para usar una tuya.</span></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;background:var(--ambl);border-radius:10px;padding:12px">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--amb);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Russo One',sans-serif;font-size:14px;flex-shrink:0">4</div>
+        <div><strong style="font-size:14px">Busca y selecciona tu imagen</strong><br><span style="font-size:13px;color:var(--muted)">Escribe el nombre de tu animal, elige una foto bonita y haz clic en <strong>Insertar</strong>.</span></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;background:var(--al);border-radius:10px;padding:12px">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--a);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Russo One',sans-serif;font-size:14px;flex-shrink:0">5</div>
+        <div><strong style="font-size:14px">Ajusta el tamaño</strong><br><span style="font-size:13px;color:var(--muted)">Arrastra las esquinas de la imagen para hacerla más grande o pequeña. ¡Siempre desde las esquinas para que no se deforme!</span></div>
+      </div>
+    </div>
+
+    <div class="info amb">💡 <strong>Tip:</strong> Para que el texto "rodee" la imagen, haz clic derecho sobre ella → <strong>Ajustar texto</strong> → <strong>Cuadrado</strong>.</div>
+
+    <div class="act-hdr"><span class="act-badge p">ACTIVIDAD</span><span class="act-title">Practica en el simulador de Word</span></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Simula el proceso: presiona el botón <strong>"Insertar imagen"</strong> en la barra de herramientas y luego elige una imagen para tu animal.</p>
+
+    <div class="word-sim">
+      <div class="word-tb">
+        <span style="font-size:11px;color:var(--muted);align-self:center;margin-right:4px">Insertar:</span>
+        <button class="tbtn" id="s5imgBtn" onclick="openImgPicker()">🖼️ Imágenes</button>
+        <button class="tbtn" style="opacity:.4;cursor:not-allowed">📊 Tabla</button>
+        <button class="tbtn" style="opacity:.4;cursor:not-allowed">🔗 Enlace</button>
+      </div>
+      <div class="word-body" id="s5body">
+        <div style="font-family:'Georgia',serif;font-size:13px;line-height:1.9;color:#333;margin-bottom:10px">
+          <strong>Mi animal favorito</strong><br>
+          Los animales son seres vivos increíbles. Cada uno tiene características únicas...
+        </div>
+        <div class="img-frame" id="s5frame">
+          <span style="font-size:32px;display:block;margin-bottom:6px">🖼️</span>
+          <div style="font-size:13px;color:var(--muted)">Aquí aparecerá tu imagen.<br>Presiona el botón <strong>"Imágenes"</strong> de arriba.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image picker modal area -->
+    <div id="s5picker" style="display:none;background:#f4f4f4;border:1.5px solid #d8d8d8;border-radius:10px;padding:14px;margin:8px 0">
+      <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:10px">📁 Imágenes en línea — Resultados para "<span id="s5anLabel2">tu animal</span>":</div>
+      <div class="img-grid" id="s5imgs"></div>
+      <button onclick="closePicker()" style="background:#f4f4f4;border:1.5px solid #d8d8d8;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;margin-top:6px;font-family:'IBM Plex Sans Condensed',sans-serif">Cancelar</button>
+    </div>
+
+    <div class="check" id="s5ok">🎉 ¡Imagen insertada! Así es como se hace en Word. ⭐ +1 estrella</div>
+    <div class="nav">
+      <button class="btn-p" onclick="go(4)">← Anterior</button>
+      <button class="btn-n" id="btn5" onclick="go(6)" disabled>Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PASO 6 — Construye tu tabla
+══════════════════════════════════ -->
+<div class="step" id="step6">
+  <div class="card">
+    <div class="robot-row">
+      <div class="av grn">🤖</div>
+      <div class="bub grn">¡Ahora vas a construir la tabla de datos de tu ficha! Los datos que llenaste antes ya están aquí. Tú solo debes revisar que todo esté correcto y completo.</div>
+    </div>
+    <div class="badge grn">ACTIVIDAD · PASO 6</div>
+    <div class="title">¡Construye tu tabla de datos!</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Revisa cada celda. Si algo está mal, corrígelo directamente en la tabla. Todos los campos deben tener información.</p>
+
+    <div class="word-sim">
+      <div class="word-tb">
+        <span style="font-size:11px;color:var(--muted)">Tabla de datos</span>
+        <span id="s6anEmoji" style="font-size:18px;margin-left:6px">🐾</span>
+      </div>
+      <div class="word-body" style="padding:10px">
+        <table class="tbl-builder" id="s6table">
+          <thead>
+            <tr>
+              <th style="width:38%">Característica</th>
+              <th>Información</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="row-lbl">🐾 Nombre</td><td><input type="text" id="t6name" placeholder="Nombre del animal" oninput="checkTable6()"></td></tr>
+            <tr><td class="row-lbl">🔬 Tipo</td><td><input type="text" id="t6type" placeholder="Mamífero, Ave, Reptil..." oninput="checkTable6()"></td></tr>
+            <tr><td class="row-lbl">🌍 Hábitat</td><td><input type="text" id="t6habitat" placeholder="¿Dónde vive?" oninput="checkTable6()"></td></tr>
+            <tr><td class="row-lbl">🍖 Alimentación</td><td><input type="text" id="t6food" placeholder="Carnívoro, Herbívoro..." oninput="checkTable6()"></td></tr>
+            <tr><td class="row-lbl">📏 Tamaño</td><td><input type="text" id="t6size" placeholder="Tamaño aproximado" oninput="checkTable6()"></td></tr>
+            <tr><td class="row-lbl">🌡️ Estado</td><td><input type="text" id="t6danger" placeholder="¿En peligro?" oninput="checkTable6()"></td></tr>
+            <tr><td class="row-lbl">⚡ Curiosidad</td><td><input type="text" id="t6special" placeholder="Algo especial de este animal" oninput="checkTable6()"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="ctr">Celdas completas: <span class="ctr-n" id="s6count">0</span> / 7</div>
+    <div class="check" id="s6ok">🎉 ¡Tabla lista! Todos los datos están completos. ⭐ +1 estrella</div>
+    <div class="nav">
+      <button class="btn-p" onclick="go(5)">← Anterior</button>
+      <button class="btn-n" id="btn6" onclick="go(7)" disabled>Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PASO 7 — Escribe la descripción
+══════════════════════════════════ -->
+<div class="step" id="step7">
+  <div class="card">
+    <div class="robot-row">
+      <div class="av">🤖</div>
+      <div class="bub">Toda buena ficha tiene una descripción: un párrafo donde describes al animal con tus propias palabras. ¡No es copiar de Internet, es escribir lo que tú sabes!</div>
+    </div>
+    <div class="badge">ACTIVIDAD · PASO 7</div>
+    <div class="title">Escribe la descripción</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Escribe un párrafo de <strong>al menos 3 oraciones</strong> sobre tu animal. Puedes hablar de su comportamiento, curiosidades o por qué es tu favorito.</p>
+
+    <div class="info">💡 <strong>Ayuda:</strong> Puedes empezar con: "El/La <em>[animal]</em> es un animal..." o "Me gusta este animal porque..."</div>
+
+    <div class="word-sim">
+      <div class="word-tb">
+        <button class="tbtn" onclick="insertTemplate7()">💡 Ayuda con el inicio</button>
+        <span style="font-size:11px;color:var(--muted);align-self:center">Oraciones: <strong id="s7oCount">0</strong> / 3</span>
+      </div>
+      <div class="word-body">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Descripción del animal</div>
+        <textarea id="s7desc" style="width:100%;border:none;outline:none;font-family:'IBM Plex Sans Condensed',sans-serif;font-size:14px;line-height:1.8;resize:none;min-height:110px;color:var(--txt)" placeholder="Escribe aquí tu descripción..." oninput="checkDesc7()"></textarea>
+      </div>
+    </div>
+
+    <div class="check" id="s7ok">🎉 ¡Excelente descripción! Ya tienes el texto de tu ficha. ⭐ +1 estrella</div>
+    <div class="nav">
+      <button class="btn-p" onclick="go(6)">← Anterior</button>
+      <button class="btn-n" id="btn7" onclick="go(8)" disabled>Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PASO 8 — Elige imagen decorativa
+══════════════════════════════════ -->
+<div class="step" id="step8">
+  <div class="card">
+    <div class="robot-row">
+      <div class="av acc">🤖</div>
+      <div class="bub acc">¡Falta la imagen decorativa de tu ficha! Elige la que más te guste para representar a tu animal. En Word harías esto con "Insertar → Imágenes".</div>
+    </div>
+    <div class="badge acc">ACTIVIDAD · PASO 8</div>
+    <div class="title">Elige la imagen para tu ficha</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Selecciona la imagen que mejor representa a <strong id="s8anLabel">tu animal</strong> para tu ficha informativa.</p>
+
+    <div class="img-grid" id="s8imgs"></div>
+
+    <div id="s8preview" style="display:none;margin:12px 0">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Vista previa de tu imagen:</div>
+      <div style="background:linear-gradient(135deg,var(--pl),var(--al));border-radius:10px;padding:20px;text-align:center;border:2px solid var(--pm)">
+        <div id="s8selectedImg" style="font-size:72px;margin-bottom:6px"></div>
+        <div id="s8caption" style="font-size:12px;color:var(--muted);font-style:italic"></div>
+      </div>
+    </div>
+
+    <div class="check" id="s8ok">🎉 ¡Imagen seleccionada! Tu ficha ya tiene foto. ⭐ +1 estrella</div>
+    <div class="nav">
+      <button class="btn-p" onclick="go(7)">← Anterior</button>
+      <button class="btn-n" id="btn8" onclick="go(9)" disabled>Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PASO 9 — Vista previa de la ficha
+══════════════════════════════════ -->
+<div class="step" id="step9">
+  <div class="card">
+    <div class="robot-row">
+      <div class="av grn">🤖</div>
+      <div class="bub grn">¡Llegó el momento! Aquí está tu ficha informativa completamente terminada. ¡Mírala completa con todos los elementos que aprendiste: tabla, imagen y descripción!</div>
+    </div>
+    <div class="badge grn">VISTA PREVIA · PASO 9</div>
+    <div class="title">¡Tu ficha terminada!</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Así se vería tu ficha si la abrieras en Word. ¡Revisa que todo esté correcto!</p>
+
+    <div class="ficha" id="fichaFinal"></div>
+
+    <div class="info grn" style="margin-top:14px">✅ <strong>¡Excelente trabajo!</strong> Tu ficha tiene todos los elementos que aprendiste: tabla de datos, imagen decorativa y descripción propia.</div>
+
+    <!-- DOWNLOAD -->
+    <button class="btn-dl" id="btnDownload" onclick="downloadFicha()">
+      ⬇️ Descargar mi ficha como imagen
+    </button>
+    <div class="dl-status" id="dlStatus"></div>
+
+    <div class="nav">
+      <button class="btn-p" onclick="go(8)">← Anterior</button>
+      <button class="btn-n" onclick="go(10); addStar(2); launchConfetti()">¡Finalizar! 🏆</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PASO 10 — Celebración
+══════════════════════════════════ -->
+<div class="step" id="step10">
+  <div class="card">
+    <div class="celeb">
+      <span class="em">🏆</span>
+      <h2>¡Ficha completada!</h2>
+      <p>¡Eres un experto en tablas e imágenes en Word!</p>
+      <div class="medal">🎖️ Medalla: Creador de Fichas Informativas</div>
+      <div style="font-size:26px;letter-spacing:4px;margin:8px 0" id="finalStars"></div>
+    </div>
+    <div style="background:#f4f4f4;border-radius:10px;padding:14px 16px;margin:12px 0">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Lo que aprendiste en este taller</div>
+      <ul style="list-style:none">
+        <li style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #e0e0e0;font-size:14px"><span style="font-size:17px">📊</span><span>Qué es una tabla y cómo está formada por filas, columnas y celdas</span></li>
+        <li style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #e0e0e0;font-size:14px"><span style="font-size:17px">🖱️</span><span>Cómo insertar una tabla en Word (Insertar → Tabla)</span></li>
+        <li style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #e0e0e0;font-size:14px"><span style="font-size:17px">🖼️</span><span>Cómo insertar una imagen en Word (Insertar → Imágenes)</span></li>
+        <li style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #e0e0e0;font-size:14px"><span style="font-size:17px">📝</span><span>Cómo organizar información en una ficha con tabla, imagen y descripción</span></li>
+        <li style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;font-size:14px"><span style="font-size:17px">✍️</span><span>Cómo escribir una descripción con tus propias palabras</span></li>
+      </ul>
+    </div>
+    <div class="nav">
+      <button class="btn-n" onclick="restart()">↺ Hacer otra ficha</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+// ─ STATE ─────────────────────────────────────────────────────────
+let step = 1;
+const TOTAL = 10;
+let starsArr = Array(10).fill('☆');
+
+const data = {
+  emoji:'🐾', name:'', type:'', habitat:'', food:'',
+  size:'', danger:'', special:'', desc:'', img:'🐾', imgCaption:''
+};
+
+function addStar(n=1){
+  for(let i=0;i<n;i++){
+    const idx=starsArr.indexOf('☆');
+    if(idx>=0) starsArr[idx]='⭐';
+  }
+  document.getElementById('starsDisp').textContent=starsArr.join('');
+}
+
+// ─ NAVIGATION ────────────────────────────────────────────────────
+function go(n){
+  step=n;
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  const pct=Math.round((n/TOTAL)*100);
+  document.getElementById('progBar').style.width=pct+'%';
+  document.getElementById('stepLbl').textContent='Paso '+n+' de '+TOTAL;
+  document.getElementById('pct').textContent=pct+'%';
+  if(n===6) prefillTable6();
+  if(n===8) buildImgPicker8();
+  if(n===9) buildFicha();
+}
+
+// ─ PASO 2 — Quiz ─────────────────────────────────────────────────
+let q2done=0, q2star=false;
+function qa(blockId, el, correct, fbId){
+  const block=document.getElementById(blockId);
+  if(block.querySelector('.ok')||block.querySelector('.err')) return;
+  const fb=document.getElementById(fbId);
+  if(correct){
+    el.classList.add('ok'); fb.textContent='✅ ¡Correcto!'; fb.className='fb show ok';
+  } else {
+    el.classList.add('err'); fb.textContent='❌ No es correcto. Revisa la respuesta.'; fb.className='fb show err';
+    block.querySelectorAll('.qopt').forEach(o=>{ if(o.onclick.toString().includes('true')) o.classList.add('ok'); });
+  }
+  q2done++;
+  if(q2done>=2){
+    document.getElementById('s2ok').classList.add('show');
+    document.getElementById('btn2').disabled=false;
+    if(!q2star){ q2star=true; addStar(); }
+  }
+}
+
+// ─ PASO 3 — Animal picker ─────────────────────────────────────────
+function pickAnimal(el, emoji, name, type){
+  document.querySelectorAll('.an-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  data.emoji=emoji; data.name=name; data.type=type;
+  document.getElementById('s3ok').classList.add('show');
+  document.getElementById('s3anName').textContent=name;
+  document.getElementById('btn3').disabled=false;
+  if(!document.getElementById('s3ok').dataset.starred){
+    document.getElementById('s3ok').dataset.starred='1';
+    addStar();
+  }
+  document.getElementById('customAnimal').value='';
+  document.getElementById('customEmoji').value='';
+}
+
+function customAnimalInput(){
+  const name=document.getElementById('customAnimal').value.trim();
+  const emoji=document.getElementById('customEmoji').value.trim()||'🐾';
+  if(name.length>=2){
+    document.querySelectorAll('.an-card').forEach(c=>c.classList.remove('sel'));
+    data.name=name; data.emoji=emoji; data.type='';
+    document.getElementById('s3ok').classList.add('show');
+    document.getElementById('s3anName').textContent=name;
+    document.getElementById('btn3').disabled=false;
+    if(!document.getElementById('s3ok').dataset.starred){
+      document.getElementById('s3ok').dataset.starred='1';
+      addStar();
+    }
+  }
+}
+
+// ─ PASO 4 — Form ─────────────────────────────────────────────────
+let s4star=false;
+function checkForm4(){
+  const fields=['f4name','f4type','f4habitat','f4food','f4size','f4danger'];
+  let filled=0;
+  fields.forEach(id=>{ if(document.getElementById(id).value.trim()) filled++; });
+  if(document.getElementById('f4special').value.trim()) filled++;
+  document.getElementById('f4count').textContent=Math.min(filled,6);
+  const count=filled;
+  if(count>=6){
+    document.getElementById('s4ok').classList.add('show');
+    document.getElementById('btn4').disabled=false;
+    // Save to data
+    data.name=document.getElementById('f4name').value||data.name;
+    data.type=document.getElementById('f4type').value||data.type;
+    data.habitat=document.getElementById('f4habitat').value;
+    data.food=document.getElementById('f4food').value;
+    data.size=document.getElementById('f4size').value;
+    data.danger=document.getElementById('f4danger').value;
+    data.special=document.getElementById('f4special').value;
+    if(!s4star){ s4star=true; addStar(); }
+  }
+}
+
+// ─ PASO 5 — Image simulator ──────────────────────────────────────
+const imgOptions = {
+  '🦁':['🦁','🦁 descansando','👑 Rey de la selva'],
+  '🐬':['🐬','🌊 Delfín nadando','🐬 Saltando'],
+  '🦅':['🦅','🏔️ Águila volando','🦅 En su nido'],
+  '🐘':['🐘','🌿 Elefante en sabana','🐘 Familia'],
+  '🐆':['🐆','🌿 Leopardo en árbol','🐆 Cazando'],
+  '🦈':['🦈','🌊 Tiburón en mar','🦈 Nadando'],
+  '🦜':['🦜','🌴 Guacamayo en selva','🦜 Volando'],
+  '🐢':['🐢','🌊 Tortuga marina','🐢 En la playa'],
+  '🐺':['🐺','🌙 Lobo aullando','🐺 En manada'],
+  '🦊':['🦊','🌲 Zorro en bosque','🦊 Jugando'],
+  '🦋':['🦋','🌸 Mariposa en flor','🦋 Volando'],
+  '🐊':['🐊','💧 Cocodrilo en río','🐊 Tomando sol'],
+  '🐾':['🐾','🌿 Animal en hábitat','📸 Foto del animal'],
+};
+
+let s5star=false;
+function getImgOpts(){
+  const em=data.emoji||'🐾';
+  return imgOptions[em]||['🐾','🌿 Animal','📸 Foto'];
+}
+
+function openImgPicker(){
+  document.getElementById('s5anLabel2').textContent=data.name||'tu animal';
+  const opts=getImgOpts();
+  const wrap=document.getElementById('s5imgs');
+  wrap.innerHTML='';
+  opts.forEach((o,i)=>{
+    const parts=o.split(' ');
+    const em=parts[0];
+    const lbl=parts.slice(1).join(' ')||'Imagen '+(i+1);
+    const div=document.createElement('div');
+    div.className='img-opt';
+    div.innerHTML=`<div class="ie">${em}</div><div class="il">${lbl}</div>`;
+    div.onclick=()=>selectSimImg(em, lbl);
+    wrap.appendChild(div);
+  });
+  document.getElementById('s5picker').style.display='block';
+}
+
+function closePicker(){ document.getElementById('s5picker').style.display='none'; }
+
+function selectSimImg(em, lbl){
+  closePicker();
+  const frame=document.getElementById('s5frame');
+  frame.classList.add('filled');
+  frame.innerHTML=`<span class="if-emoji">${em}</span><div class="if-lbl">${lbl}</div><div style="font-size:11px;color:var(--g);font-weight:700;margin-top:4px">✅ Imagen insertada</div>`;
+  data.img=em; data.imgCaption=lbl;
+  document.getElementById('s5ok').classList.add('show');
+  document.getElementById('btn5').disabled=false;
+  if(!s5star){ s5star=true; addStar(); }
+}
+
+// ─ PASO 6 — Table builder ────────────────────────────────────────
+function prefillTable6(){
+  document.getElementById('s6anEmoji').textContent=data.emoji||'🐾';
+  const map={
+    't6name':data.name,'t6type':data.type,'t6habitat':data.habitat,
+    't6food':data.food,'t6size':data.size,'t6danger':data.danger,'t6special':data.special
+  };
+  Object.entries(map).forEach(([id,val])=>{
+    const el=document.getElementById(id);
+    if(el&&val) el.value=val;
+  });
+  checkTable6();
+}
+
+let s6star=false;
+function checkTable6(){
+  const ids=['t6name','t6type','t6habitat','t6food','t6size','t6danger','t6special'];
+  let filled=ids.filter(id=>document.getElementById(id).value.trim()).length;
+  document.getElementById('s6count').textContent=filled;
+  if(filled>=7){
+    document.getElementById('s6ok').classList.add('show');
+    document.getElementById('btn6').disabled=false;
+    // Save back
+    data.name=document.getElementById('t6name').value;
+    data.type=document.getElementById('t6type').value;
+    data.habitat=document.getElementById('t6habitat').value;
+    data.food=document.getElementById('t6food').value;
+    data.size=document.getElementById('t6size').value;
+    data.danger=document.getElementById('t6danger').value;
+    data.special=document.getElementById('t6special').value;
+    if(!s6star){ s6star=true; addStar(); }
+  }
+}
+
+// ─ PASO 7 — Description ──────────────────────────────────────────
+let s7star=false;
+function insertTemplate7(){
+  const ta=document.getElementById('s7desc');
+  if(!ta.value.trim()){
+    ta.value=`El/La ${data.name||'[animal]'} es un animal ${data.type||'[tipo]'} muy interesante. `;
+    ta.focus();
+    checkDesc7();
+  }
+}
+function checkDesc7(){
+  const text=document.getElementById('s7desc').value.trim();
+  const sentences=text.split(/[.!?]+/).filter(s=>s.trim().length>5).length;
+  document.getElementById('s7oCount').textContent=Math.min(sentences,3);
+  data.desc=text;
+  if(sentences>=3){
+    document.getElementById('s7ok').classList.add('show');
+    document.getElementById('btn7').disabled=false;
+    if(!s7star){ s7star=true; addStar(); }
+  }
+}
+
+// ─ PASO 8 — Image picker ─────────────────────────────────────────
+function buildImgPicker8(){
+  document.getElementById('s8anLabel').textContent=data.name||'tu animal';
+  const opts=getImgOpts();
+  const wrap=document.getElementById('s8imgs');
+  wrap.innerHTML='';
+  opts.forEach((o,i)=>{
+    const parts=o.split(' ');
+    const em=parts[0];
+    const lbl=parts.slice(1).join(' ')||'Imagen '+(i+1);
+    const div=document.createElement('div');
+    div.className='img-opt';
+    div.innerHTML=`<div class="ie">${em}</div><div class="il">${lbl||'Imagen'}</div>`;
+    div.onclick=()=>selectImg8(div, em, lbl);
+    wrap.appendChild(div);
+  });
+}
+
+let s8star=false;
+function selectImg8(el, em, lbl){
+  document.querySelectorAll('#s8imgs .img-opt').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  data.img=em; data.imgCaption=lbl;
+  document.getElementById('s8selectedImg').textContent=em;
+  document.getElementById('s8caption').textContent=lbl;
+  document.getElementById('s8preview').style.display='block';
+  document.getElementById('s8ok').classList.add('show');
+  document.getElementById('btn8').disabled=false;
+  if(!s8star){ s8star=true; addStar(); }
+}
+
+// ─ PASO 9 — Build ficha ──────────────────────────────────────────
+function buildFicha(){
+  const f=document.getElementById('fichaFinal');
+  f.innerHTML=`
+    <div class="ficha-header">
+      <div class="fh-emoji">${data.emoji}</div>
+      <div>
+        <div class="fh-name">${data.name||'Mi animal favorito'}</div>
+        <div class="fh-type">${data.type||''}</div>
+      </div>
+    </div>
+    <div class="ficha-img">
+      <div class="fi-emoji">${data.img}</div>
+      <div class="fi-caption">${data.imgCaption||'Fotografía del animal'}</div>
+    </div>
+    <table class="ficha-table">
+      <tr><td class="ft-lbl">🐾 Nombre</td><td class="ft-val">${data.name||'—'}</td></tr>
+      <tr><td class="ft-lbl">🔬 Tipo de animal</td><td class="ft-val">${data.type||'—'}</td></tr>
+      <tr><td class="ft-lbl">🌍 Hábitat</td><td class="ft-val">${data.habitat||'—'}</td></tr>
+      <tr><td class="ft-lbl">🍖 Alimentación</td><td class="ft-val">${data.food||'—'}</td></tr>
+      <tr><td class="ft-lbl">📏 Tamaño</td><td class="ft-val">${data.size||'—'}</td></tr>
+      <tr><td class="ft-lbl">🌡️ Estado de conservación</td><td class="ft-val">${data.danger||'—'}</td></tr>
+      <tr><td class="ft-lbl">⚡ Curiosidad</td><td class="ft-val">${data.special||'—'}</td></tr>
+    </table>
+    <div class="ficha-desc">${data.desc||'Descripción no ingresada.'}</div>
+    <div class="ficha-footer">Ficha informativa creada con Wrobit · 5° Grado</div>
+  `;
+}
+
+// ─ DOWNLOAD ──────────────────────────────────────────────────────
+function downloadFicha(){
+  const btn=document.getElementById('btnDownload');
+  const status=document.getElementById('dlStatus');
+  btn.disabled=true;
+  btn.innerHTML='⏳ Generando imagen...';
+  status.textContent='Esto puede tardar unos segundos...';
+  const ficha=document.getElementById('fichaFinal');
+  html2canvas(ficha,{
+    scale:2, useCORS:true, backgroundColor:'#ffffff', logging:false
+  }).then(canvas=>{
+    const link=document.createElement('a');
+    const name=(data.name||'animal').replace(/\s+/g,'_').toLowerCase();
+    link.download=`ficha_${name}_wrobit.png`;
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    btn.disabled=false;
+    btn.innerHTML='✅ ¡Descargada! Volver a descargar';
+    status.textContent='El archivo PNG se guardó en tu carpeta de descargas.';
+  }).catch(()=>{
+    btn.disabled=false;
+    btn.innerHTML='⬇️ Descargar mi ficha como imagen';
+    status.textContent='⚠️ Error al generar. Intenta de nuevo.';
+  });
+}
+
+// ─ CONFETTI ──────────────────────────────────────────────────────
+function launchConfetti(){
+  const colors=['#44bcf9','#e63289','#f59e0b','#059669','#7dd9fc','#fbbf24'];
+  for(let i=0;i<70;i++){
+    const el=document.createElement('div');
+    el.className='cf';
+    el.style.cssText=`left:${Math.random()*100}vw;top:-20px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*2}s;width:${5+Math.random()*10}px;height:${5+Math.random()*10}px;${Math.random()>.5?'border-radius:50%':''}`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),4000);
+  }
+}
+
+// ─ RESTART ───────────────────────────────────────────────────────
+function restart(){
+  starsArr=Array(10).fill('☆');
+  document.getElementById('starsDisp').textContent=starsArr.join('');
+  Object.assign(data,{emoji:'🐾',name:'',type:'',habitat:'',food:'',size:'',danger:'',special:'',desc:'',img:'🐾',imgCaption:''});
+  // Reset all flags
+  q2done=0; q2star=false; s4star=false; s5star=false; s6star=false; s7star=false; s8star=false;
+  // Reset DOM
+  document.querySelectorAll('.qopt').forEach(o=>o.classList.remove('ok','err'));
+  document.querySelectorAll('.fb').forEach(f=>{f.className='fb';f.textContent='';});
+  document.querySelectorAll('.check').forEach(c=>c.classList.remove('show'));
+  document.querySelectorAll('.an-card').forEach(c=>c.classList.remove('sel'));
+  document.querySelectorAll('.btn-n').forEach(b=>{if(b.id&&b.id.startsWith('btn')&&b.id!='btn2') b.disabled=true;});
+  document.getElementById('btn2').disabled=true;
+  document.getElementById('customAnimal').value='';
+  document.getElementById('customEmoji').value='';
+  ['f4name','f4type','f4habitat','f4food','f4size','f4danger','f4special'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f4count').textContent='0';
+  document.getElementById('s7desc').value='';
+  document.getElementById('s7oCount').textContent='0';
+  document.getElementById('s5frame').classList.remove('filled');
+  document.getElementById('s5frame').innerHTML='<span style="font-size:32px;display:block;margin-bottom:6px">🖼️</span><div style="font-size:13px;color:var(--muted)">Aquí aparecerá tu imagen.<br>Presiona el botón <strong>"Imágenes"</strong> de arriba.</div>';
+  document.getElementById('s5picker').style.display='none';
+  document.getElementById('s8preview').style.display='none';
+  document.getElementById('s3ok').removeAttribute('data-starred');
+  go(1);
+}
+
+// ─ STEP 10 INIT ──────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  // pre-fill form with selected animal when going to step 4
+});
+</script>
+</body>
+</html>
